@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
             SilentSmartTheme {
              Scaffold(
                  modifier = Modifier.fillMaxSize(),
-                 topBar = { TopButtons() }
+                 topBar = { Header() }
              ) { innerPadding ->
                  Greeting(
                      name = "Android",
@@ -54,38 +55,19 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-fun TopButtons() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Button(
-            onClick = { /* Acción del botón Edit */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), // Naranja
-            shape = RoundedCornerShape(20.dp) // Bordes redondeados
-        ) {
-            Text(text = "Edit", color = Color.Black)
-        }
 
-        Button(
-            onClick = { /* Acción del botón + */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), // Naranja
-            shape = RoundedCornerShape(20.dp) // Bordes redondeados
-        ) {
-            Text(text = "+", color = Color.Black)
-        }
-    }
-}
 
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     SilentSmartTheme {
-        Greeting("Android")
-        TopButtons()
+        Column(
+
+        ) {
+            Header()
+            TimerContent()
+            FooterNavbar()
+        }
     }
 }
