@@ -2,22 +2,16 @@ package com.example.silentsmart.database.dao
 
 import androidx.room.*
 import com.example.silentsmart.database.entity.Temporizador
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TemporizadorDao {
-
     @Query("SELECT * FROM Temporizador")
-    suspend fun getAll(): List<Temporizador>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(temporizador: Temporizador): Long
+    fun getAll(): Flow<List<Temporizador>>
 
     @Update
     suspend fun update(temporizador: Temporizador)
 
-    @Delete
-    suspend fun delete(temporizador: Temporizador)
-
-    @Query("SELECT * FROM Temporizador WHERE activado = 1 LIMIT 1")
-    suspend fun getTemporizadorActivo(): Temporizador?
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(vararg temporizadores: Temporizador)
 }

@@ -10,10 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="042ea0b9-9435-46e3-a42a-e726cd95658e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/FooterNavBar.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/TimerContent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/TimerContent.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/entity/Horario.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/entity/Horario.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/AppDatabase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/AppDatabase.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoHorario.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoHorario.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoTemporizador.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoTemporizador.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
