@@ -23,24 +23,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.silentsmart.ui.theme.SilentSmartTheme
 
+
+
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SilentSmartTheme {
-             Scaffold(
-                 modifier = Modifier.fillMaxSize(),
-                 topBar = { Header() }
-             ) { innerPadding ->
-                 Greeting(
-                     name = "Android",
-                     modifier = Modifier.padding(innerPadding)
-                 )
-             }
-            }
-        }
-    }
+   override fun onCreate(savedInstanceState: Bundle?) {
+       super.onCreate(savedInstanceState)
+       enableEdgeToEdge()
+       setContent {
+           SilentSmartTheme {
+               Column {
+                   Header()
+                   TimerContent()
+                   FooterNavbar()
+               }
+           }
+       }
+   }
 }
 
 @Composable

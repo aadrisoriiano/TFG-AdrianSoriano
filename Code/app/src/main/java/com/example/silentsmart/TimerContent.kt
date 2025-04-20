@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Content() {
+fun TimerContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
