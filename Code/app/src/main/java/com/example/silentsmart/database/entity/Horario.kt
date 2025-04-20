@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class Horario(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val diaSemana: String,
-    val hora: String,
+    val horaInicio: String,
+    val horaFin: String,
     val activado: Boolean
 )

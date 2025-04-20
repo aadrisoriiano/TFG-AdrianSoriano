@@ -26,19 +26,27 @@ import com.example.silentsmart.ui.theme.SilentSmartTheme
 
 
 class MainActivity : ComponentActivity() {
-   override fun onCreate(savedInstanceState: Bundle?) {
-       super.onCreate(savedInstanceState)
-       enableEdgeToEdge()
-       setContent {
-           SilentSmartTheme {
-               Column {
-                   Header()
-                   TimerContent()
-                   FooterNavbar()
-               }
-           }
-       }
-   }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            SilentSmartTheme {
+                Scaffold(
+                    bottomBar = { FooterNavBar() } // Footer aquí
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding) // Asegura que el contenido no se tape con el footer
+                            .fillMaxSize()
+                    ) {
+                        Header()
+                        TimerContent()
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -60,12 +68,17 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     SilentSmartTheme {
-        Column(
-
-        ) {
-            Header()
-            TimerContent()
-            FooterNavbar()
+        Scaffold(
+            bottomBar = { FooterNavBar() }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                Header()
+                TimerContent()
+            }
         }
     }
 }
