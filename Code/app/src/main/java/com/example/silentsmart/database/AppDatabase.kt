@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "silentsmart_db"
-                ).fallbackToDestructiveMigration(false)
+                ).fallbackToDestructiveMigration(true)
                     .build()
                 INSTANCE = instance
                 instance

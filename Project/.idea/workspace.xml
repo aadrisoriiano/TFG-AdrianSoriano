@@ -10,11 +10,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="042ea0b9-9435-46e3-a42a-e726cd95658e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Code/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/AppDatabase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/AppDatabase.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoHorario.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoHorario.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoTemporizador.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/app/src/main/java/com/example/silentsmart/database/dao/DaoTemporizador.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Code/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../Code/gradle/libs.versions.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,7 +20,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=PhysicalDevice, isTemplate=false, identifier=serial=67dbaa20)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\Aarón\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -52,21 +47,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="SilentSmart.app" />

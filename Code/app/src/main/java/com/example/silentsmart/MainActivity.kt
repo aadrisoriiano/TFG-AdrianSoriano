@@ -24,29 +24,37 @@ import androidx.compose.ui.unit.dp
 import com.example.silentsmart.ui.theme.SilentSmartTheme
 
 
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
+import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SilentSmartTheme {
                 Scaffold(
-                    bottomBar = { FooterNavBar() } // Footer aquí
+                    bottomBar = { FooterNavBar() }
                 ) { innerPadding ->
                     Column(
                         modifier = Modifier
-                            .padding(innerPadding) // Asegura que el contenido no se tape con el footer
+                            .padding(innerPadding)
                             .fillMaxSize()
                     ) {
                         Header()
-                        TimerContent()
+                        TimerContent(viewModel = mainViewModel) // Pasar el ViewModel aquí
+                        FooterNavBar()
                     }
                 }
             }
         }
     }
-
 }
 
 @Composable
@@ -77,7 +85,8 @@ fun GreetingPreview() {
                     .fillMaxSize()
             ) {
                 Header()
-                TimerContent()
+
+                //TimerContent(viewModel = null) // Pasar el ViewModel aquí
             }
         }
     }
