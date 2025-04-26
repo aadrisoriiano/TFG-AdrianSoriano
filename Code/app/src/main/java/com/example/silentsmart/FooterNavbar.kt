@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -20,14 +21,14 @@ fun FooterNavBar() {
         NavigationBarItem(
             selected = true,
             onClick = { /*TODO*/ },
-            icon = { Icon( Icons.Filled.DateRange , null) },
+            icon = { Icon( Icons.Filled.Notifications , null) },
             label = { Text(text = "Timer") }
         )
         NavigationBarItem(
             selected = false,
             onClick = { /*TODO*/ },
-            icon = { Icon( Icons.Filled.LocationOn, null) },
-            label = { Text(text = "Location")}
+            icon = { Icon( Icons.Filled.DateRange, null) },
+            label = { Text(text = "Schedule")}
         )
     }
 }

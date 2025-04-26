@@ -1,5 +1,6 @@
 package com.example.silentsmart
 
+import TimerContent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,12 +27,14 @@ import com.example.silentsmart.ui.theme.SilentSmartTheme
 
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val mainViewModel: MainViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-    }
+    private val mainViewModel: MainViewModel by viewModels()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Header()
                         TimerContent(viewModel = mainViewModel) // Pasar el ViewModel aquí
-                        FooterNavBar()
+
                     }
                 }
             }
@@ -64,7 +67,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .wrapContentSize()
-        
+
 
     )
 }

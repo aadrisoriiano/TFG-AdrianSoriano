@@ -1,8 +1,9 @@
-package com.example.silentsmart
-
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -15,16 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.silentsmart.MainViewModel
 import com.example.silentsmart.database.entity.Temporizador
-import com.example.silentsmart.ui.theme.SilentSmartTheme
-import androidx.compose.foundation.lazy.items
+
 
 
 @Composable
 fun TimerContent(viewModel: MainViewModel) {
+
     val temporizadores = viewModel.temporizadores.collectAsState(initial = emptyList()).value
 
     Column(
@@ -33,39 +34,43 @@ fun TimerContent(viewModel: MainViewModel) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Primera fila: Temporizador grande
+        // Temporizador grande
         TimerSection()
 
-        // Segunda fila: Carrusel de temporizadores
-      //  TimerCarousel(temporizadores)
-
-        // Tercera fila: Carrusel de horarios
-        ScheduleCarousel()
+        // Grid de temporizadores
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(temporizadores.orEmpty().filterNotNull(), key = { it.id }) { temporizador ->
+                TimerCard(temporizador)
+            }
+        }
     }
 }
+
 @Composable
 fun TimerSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.LightGray) // Color de fondo gris
-            .padding(16.dp), // Padding interno
+            .background(Color.LightGray)
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Temporizador
             Text(
-                text = "00:00:00", // Aquí se mostrará el tiempo restante
+                text = "1 : 50 : 30", // Aquí deberías mostrar el tiempo real
                 fontSize = 32.sp,
                 color = Color.Black
             )
-
-            // Botones de control
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -84,27 +89,14 @@ fun TimerSection() {
     }
 }
 @Composable
-fun TimerCarousel(temporizadores: List<Temporizador>) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(temporizadores, key = { it.id }) { temporizador ->
-            TimerCard(temporizador)
-        }
-    }
-}
-
-@Composable
 fun TimerCard(temporizador: Temporizador) {
     Card(
         modifier = Modifier
-            .size(120.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.LightGray),
-        elevation = CardDefaults.cardElevation(4.dp) // Corrección de elevación
+            .fillMaxWidth()
+            .aspectRatio(1.7f),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray), // Fondo gris
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -113,32 +105,19 @@ fun TimerCard(temporizador: Temporizador) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             Text(
                 text = "${temporizador.horas}h ${temporizador.minutos}m",
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { /* Acción para iniciar temporizador */ }) {
-                Text("Iniciar")
+            IconButton(
+                onClick = { /* Acción para iniciar temporizador */ },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")
             }
-        }
-    }
-}
-@Composable
-fun ScheduleCarousel() {
-    // Carrusel de horarios
-    Text("Carrusel de Horarios (Placeholder)")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TimerContentPreview() {
-    SilentSmartTheme {
-        Column(
-
-        ) {
-       // TimerContent()
         }
     }
 }

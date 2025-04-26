@@ -1,4 +1,5 @@
 package com.example.silentsmart.database.dao
+
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -10,13 +11,20 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HorarioDao {
-    @Query("SELECT * FROM Horario")
-    fun getAll(): Flow<List<Horario>>
+    @get:Query("SELECT * FROM Horario")
+    val all: Flow<MutableList<Horario?>?>
+
+    @Query("SELECT * FROM Horario WHERE id = :id")
+    fun get(id: Int): Horario?
+
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    fun insert(horario: Horario?)
 
     @Update
-    suspend fun update(horario: Horario)
+    fun update(horario: Horario?)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(vararg horarios: Horario)
+    @Delete
+    fun delete(horario: Horario?)
+    @Query("DELETE FROM horario")
+     fun deleteAll()
 }
-

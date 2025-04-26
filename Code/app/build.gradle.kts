@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
         id("org.jetbrains.kotlin.plugin.compose") version "2.1.20" // this version matches your Kotlin version
-
+    id("com.google.dagger.hilt.android") version "2.56.2"
+    kotlin("kapt")
 }
 
 android {
@@ -52,8 +53,27 @@ dependencies {
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.core.ktx)
     implementation(libs.androidx.room.runtime.android)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("com.squareup:javapoet:1.13.0")
+
+    implementation("com.google.dagger:hilt-android:2.56.2")
+    kapt("com.google.dagger:hilt-android-compiler:2.56.2")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+
+    implementation("androidx.room:room-runtime:2.5.2")
+    kapt("androidx.room:room-compiler:2.5.2") // Procesador de anotaciones
+    implementation ("androidx.room:room-ktx:2.5.2")
+
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+
+}
+
+hilt {
+    enableAggregatingTask = false
 }

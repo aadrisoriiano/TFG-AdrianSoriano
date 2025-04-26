@@ -6,12 +6,21 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TemporizadorDao {
-    @Query("SELECT * FROM Temporizador")
-    fun getAll(): Flow<List<Temporizador>>
+    @get:Query("SELECT * FROM Temporizador")
+    val all: Flow<MutableList<Temporizador?>?>
+
+    @Query("SELECT * FROM Temporizador WHERE id = :id")
+    fun get(id: Int): Temporizador?
+
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    fun insert(temporizador: Temporizador?)
 
     @Update
-    suspend fun update(temporizador: Temporizador)
+    fun update(temporizador: Temporizador?)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(vararg temporizadores: Temporizador)
+    @Delete
+    fun delete(temporizador: Temporizador?)
+
+    @Query("DELETE FROM temporizador")
+     fun deleteAll()
 }
