@@ -1,95 +1,55 @@
 package com.example.silentsmart
 
-import TimerContent
+
+import BottomNavigationBarWithDivider
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.silentsmart.ui.theme.SilentSmartTheme
-
-
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModelProvider
-import dagger.hilt.android.AndroidEntryPoint
-import kotlin.getValue
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import com.example.silentsmart.ui.theme.SilentSmartTheme
+import com.example.silentsmart.ScheduleContent
+import com.example.silentsmart.TimerContent
 
-
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SilentSmartTheme {
+                var selectedTab by remember { mutableStateOf("Timer") }
                 Scaffold(
-                    bottomBar = { FooterNavBar() }
+                    bottomBar = {
+                        BottomNavigationBarWithDivider(
+                            selectedTab = selectedTab,
+                            onTabSelected = { selectedTab = it }
+                        )
+                    }
                 ) { innerPadding ->
                     Column(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize()
-                    ) {
-                        Header()
-                        TimerContent(viewModel = mainViewModel) // Pasar el ViewModel aquí
+                            .background(Color.White)
 
+                    ) {
+                        Header(title = if (selectedTab == "Timer") "Timer" else "Schedule")
+                        Spacer(modifier = Modifier.height(2.dp))
+                        when (selectedTab) {
+                            "Timer" -> TimerContent(viewModel = mainViewModel)
+                            "Schedule" -> ScheduleContent(viewModel = mainViewModel)
+                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-            .fillMaxSize()
-            .wrapContentSize()
-
-
-    )
-}
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SilentSmartTheme {
-        Scaffold(
-            bottomBar = { FooterNavBar() }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                Header()
-
-                //TimerContent(viewModel = null) // Pasar el ViewModel aquí
             }
         }
     }

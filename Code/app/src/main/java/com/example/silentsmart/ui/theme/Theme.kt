@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -17,10 +18,18 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Pink80
 )
 
+val LightGrey = Color(0xFFE0E0E0) // Gris claro para fondos
+val DarkGrey = Color(0xFF757575)  // Gris oscuro para iconos/textos
+
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = DarkGrey,       // Para iconos y textos seleccionados
+    secondary = LightGrey,    // Puedes usarlo para backgrounds secundarios
+    background = Color.White, // Fondo general
+    surface = LightGrey,      // Fondo de cards y superficies
+    onPrimary = Color.Black,
+    onSecondary = Color.Green,
+    onBackground = Color.Black,
+    onSurface = Color.Black,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

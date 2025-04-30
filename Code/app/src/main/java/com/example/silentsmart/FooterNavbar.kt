@@ -33,10 +33,3 @@ fun FooterNavBar() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FooterNavBarPreview() {
-    SilentSmartTheme {
-        FooterNavBar()
-    }
-}

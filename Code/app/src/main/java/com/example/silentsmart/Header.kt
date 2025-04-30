@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.silentsmart.ui.theme.SilentSmartTheme
 
 @Composable
-fun Header() {
+fun Header(title: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -31,7 +31,7 @@ fun Header() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TopButtons()
-        Title("Timer")
+        Title(title)
         ThreeColumnButtons()
     }
 }
@@ -69,7 +69,7 @@ fun Title(title: String) {
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 15.dp),
         color = Color.Black,
-        fontSize = 24.sp,
+        fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
 
     )
@@ -120,12 +120,4 @@ fun GreetingHeader(name: String, modifier: Modifier = Modifier) {
 
 
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HeaderPreview() {
-    SilentSmartTheme {
-        Header()
-    }
 }

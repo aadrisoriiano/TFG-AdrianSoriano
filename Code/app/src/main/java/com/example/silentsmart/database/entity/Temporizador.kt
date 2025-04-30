@@ -8,5 +8,6 @@ data class Temporizador(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val horas: Int,
     val minutos: Int,
-    val activado: Boolean
+    val activado: Boolean = false,
+    //val favorito: Boolean = false
 )
