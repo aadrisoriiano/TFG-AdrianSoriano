@@ -4,6 +4,8 @@ plugins {
         id("org.jetbrains.kotlin.plugin.compose") version "2.1.20" // this version matches your Kotlin version
     id("com.google.dagger.hilt.android") version "2.56.2"
     kotlin("kapt")
+    id("io.gitlab.arturbosch.detekt") version "1.23.1"
+
 }
 
 android {
@@ -42,6 +44,7 @@ android {
 }
 dependencies {
 
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -76,4 +79,12 @@ dependencies {
 
 hilt {
     enableAggregatingTask = false
+}
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
 }

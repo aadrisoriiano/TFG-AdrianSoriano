@@ -15,7 +15,7 @@ interface HorarioDao {
     val all: Flow<MutableList<Horario?>?>
 
     @Query("SELECT * FROM Horario WHERE id = :id")
-    fun get(id: Int): Horario?
+    fun get(id: Int): Horario
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     fun insert(horario: Horario?)

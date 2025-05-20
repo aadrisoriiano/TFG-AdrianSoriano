@@ -19,9 +19,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.silentsmart.R
 import com.example.silentsmart.database.entity.Temporizador
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -37,13 +41,15 @@ fun TimerContent(viewModel: MainViewModel) {
     ) {
         TimerSection()
         Spacer(modifier = Modifier.height(4.dp))
+        // Cambia aquí: usa Modifier.weight(1f) para que el grid ocupe todo el espacio restante
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(bottom = 20.dp),
-            modifier = Modifier.fillMaxWidth()
-                //.padding(horizontal = 8.dp)
+            contentPadding = PaddingValues(bottom = 0.dp), // Elimina padding extra abajo
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // <-- Esto hace que llegue hasta el footer
         ) {
             items(temporizadores.orEmpty().filterNotNull(), key = { it.id }) { temporizador ->
                 TimerCard(temporizador)
@@ -57,34 +63,44 @@ fun TimerSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(8.dp, RoundedCornerShape(30.dp))
             .clip(RoundedCornerShape(20.dp))
             .background(Color.LightGray)
-            .padding(16.dp),
+            .padding(4.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "1 : 50 : 30", // Aquí puedes mostrar el temporizador grande
-                fontSize = 32.sp,
-                color = Color.Black
+                text = "1 : 50 : 30",
+                fontSize = 50.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 2.sp
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                IconButton(onClick = { /* Acción para parar */ }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Parar")
-                }
-                IconButton(onClick = { /* Acción para vibración */ }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Vibración")
-                }
-                IconButton(onClick = { /* Acción para sonido */ }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Sonido")
+                Box(
+                    modifier = Modifier
+                        .width(52.dp)
+                        .height(28.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFB0B0B0)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { /* Acción para parar */ },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Parar")
+                    }
                 }
             }
+            Spacer(modifier = Modifier.height(2.dp))
         }
     }
 }
@@ -94,7 +110,8 @@ fun TimerCard(temporizador: Temporizador) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.7f),
+            .aspectRatio(1.7f)
+            .shadow(8.dp, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         elevation = CardDefaults.cardElevation(4.dp)
@@ -102,16 +119,17 @@ fun TimerCard(temporizador: Temporizador) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(4.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "${temporizador.horas}h ${temporizador.minutos}m",
-                fontSize = 20.sp,
-                color = Color.Black
+                fontSize = 32.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -119,15 +137,36 @@ fun TimerCard(temporizador: Temporizador) {
             ) {
                 IconButton(onClick = { /* Favorito */ }) {
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder, // Cambia a Favorite si es favorito
+                        imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = "Favorito"
                     )
                 }
-                IconButton(onClick = { /* Play */ }) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")
+                Box(
+                    modifier = Modifier
+                        .width(52.dp)
+                        .height(28.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFB0B0B0)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { /* Play */ },
+                        modifier = Modifier.size(28.dp)
+                    ) {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")
+                    }
                 }
-                IconButton(onClick = { /* Modo */ }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Modo") // Cambia el icono según modo
+                IconButton(onClick = { /* Modo, solo visual */ }) {
+                    val iconRes = when (temporizador.modo) {
+                        Modo.SILENCIO -> R.drawable.volume_off
+                        Modo.VIBRACION -> R.drawable.vibration
+                        Modo.SONIDO -> R.drawable.volume_up
+                        else -> R.drawable.volume_off
+                    }
+                    Icon(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = "Modo: ${temporizador.modo}"
+                    )
                 }
             }
         }

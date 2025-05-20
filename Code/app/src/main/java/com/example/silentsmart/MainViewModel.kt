@@ -76,10 +76,10 @@ class MainViewModel @Inject constructor(
 
                 // Si la tabla de temporizadores está vacía, insertar ejemplos
                 if (temporizadores.isEmpty()) {
-                    db.temporizadorDao().insert(Temporizador(horas = 1, minutos = 0, activado = false))
-                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 45, activado = false))
-                    db.temporizadorDao().insert(Temporizador(horas = 2, minutos = 15, activado = false))
-                    db.temporizadorDao().insert(Temporizador(horas = 5, minutos = 25, activado = false))
+                    db.temporizadorDao().insert(Temporizador(horas = 1, minutos = 0, activado = false, modo = Modo.SILENCIO))
+                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 45, activado = false, modo = Modo.SILENCIO))
+                    db.temporizadorDao().insert(Temporizador(horas = 2, minutos = 15, activado = false, modo = Modo.SONIDO))
+                    db.temporizadorDao().insert(Temporizador(horas = 5, minutos = 25, activado = false, modo = Modo.VIBRACION))
                 }
             }
         }

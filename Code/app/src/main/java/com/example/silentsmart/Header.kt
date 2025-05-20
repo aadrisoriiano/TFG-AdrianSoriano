@@ -1,26 +1,27 @@
 package com.example.silentsmart
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.silentsmart.ui.theme.SilentSmartTheme
+import com.example.silentsmart.R
 
 @Composable
 fun Header(title: String) {
@@ -48,7 +49,12 @@ fun TopButtons() {
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text(text = "Edit", color = Color.Black)
+            Text(
+                text = "Edit",
+                color = Color.Black,
+                fontSize = 24.sp,
+               
+            )
         }
 
         Button(
@@ -56,7 +62,12 @@ fun TopButtons() {
             colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
             shape = RoundedCornerShape(20.dp)
         ) {
-            Text(text = "+", color = Color.Black)
+            Text(
+                text = "+",
+                color = Color.Black,
+                fontSize = 28.sp,
+             
+            )
         }
     }
 }
@@ -77,34 +88,46 @@ fun Title(title: String) {
 
 @Composable
 fun ThreeColumnButtons() {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .shadow(12.dp, RoundedCornerShape(30.dp)) // Sombra y mismo radio que el clip
+            .clip(RoundedCornerShape(30.dp))
+            .background(Color.LightGray)
+            .padding(2.dp)
     ) {
-        Button(
-            onClick = { /* Acción para silenciar el móvil */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(20.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Silencio", color = Color.Black)
-        }
-
-        Button(
-            onClick = { /* Acción para poner en vibración */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Text(text = "Vibración", color = Color.Black)
-        }
-
-        Button(
-            onClick = { /* Acción para modo sonido */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Text(text = "Sonido", color = Color.Black)
+            IconButton(
+                onClick = { /* Acción para silenciar el móvil */ }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.volume_off),
+                    contentDescription = "Silencio",
+                    tint = Color.Black
+                )
+            }
+            IconButton(
+                onClick = { /* Acción para poner en vibración */ }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.vibration),
+                    contentDescription = "Vibración",
+                    tint = Color.Black
+                )
+            }
+            IconButton(
+                onClick = { /* Acción para modo sonido */ }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.volume_up),
+                    contentDescription = "Sonido",
+                    tint = Color.Black
+                )
+            }
         }
     }
 }
