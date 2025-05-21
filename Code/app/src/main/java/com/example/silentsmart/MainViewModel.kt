@@ -69,9 +69,9 @@ class MainViewModel @Inject constructor(
 
                 // Si la tabla de horarios está vacía, insertar ejemplos
                 if (horarios.isEmpty()) {
-                    db.horarioDao().insert(Horario(diaSemana = "Lunes", horaInicio = "08:00", horaFin = "09:00", activado = false))
-                    db.horarioDao().insert(Horario(diaSemana = "Martes", horaInicio = "10:00", horaFin = "11:00", activado = false))
-                    db.horarioDao().insert(Horario(diaSemana = "Miércoles", horaInicio = "14:00", horaFin = "15:00", activado = false))
+                    db.horarioDao().insert(Horario(diaSemana = "Lunes", horaInicio = "08:00", horaFin = "09:00", activado = false, modo = Modo.SILENCIO))
+                    db.horarioDao().insert(Horario(diaSemana = "Martes", horaInicio = "10:00", horaFin = "11:00", activado = false, modo = Modo.VIBRACION))
+                    db.horarioDao().insert(Horario(diaSemana = "Miércoles", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SONIDO))
                 }
 
                 // Si la tabla de temporizadores está vacía, insertar ejemplos

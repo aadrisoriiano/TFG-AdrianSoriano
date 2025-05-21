@@ -15,8 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -41,33 +45,56 @@ fun TopButtons() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(top = 2.dp, start = 6.dp, end = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(
-            onClick = { /* Acción del botón Edit */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(20.dp)
+        // Botón Edit
+        Box(
+            modifier = Modifier
+                .height(26.dp)
+                .width(70.dp)
+                .shadow(12.dp, RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Edit",
-                color = Color.Black,
-                fontSize = 24.sp,
-               
-            )
+            TextButton(
+                onClick = { /* Acción del botón Edit */ },
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "Edit",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
 
-        Button(
-            onClick = { /* Acción del botón + */ },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-            shape = RoundedCornerShape(20.dp)
+        // Botón +
+        Box(
+            modifier = Modifier
+                .height(26.dp)
+                .width(70.dp)
+                .shadow(12.dp, RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.LightGray),
+
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "+",
-                color = Color.Black,
-                fontSize = 28.sp,
-             
-            )
+            TextButton(
+                onClick = { /* Acción del botón + */ },
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "+",
+                    color = Color.Black,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
@@ -82,7 +109,13 @@ fun Title(title: String) {
         color = Color.Black,
         fontSize = 40.sp,
         fontWeight = FontWeight.Bold,
-
+        style = LocalTextStyle.current.copy(
+            shadow = Shadow(
+                color = Color(0xFF570606),
+                offset = Offset(2f, 2f),
+                blurRadius = 5f
+            )
+        )
     )
 }
 

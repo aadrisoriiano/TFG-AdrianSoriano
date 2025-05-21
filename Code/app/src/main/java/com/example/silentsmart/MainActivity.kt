@@ -14,10 +14,13 @@ import androidx.compose.ui.unit.dp
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 import com.example.silentsmart.ui.theme.SilentSmartTheme
 import com.example.silentsmart.ScheduleContent
 import com.example.silentsmart.TimerContent
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -26,10 +29,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SilentSmartTheme {
+                val view = LocalView.current
+                val window = (view.context as ComponentActivity).window
+                SideEffect {
+                    // Fondo blanco en barra de navegación y notificaciones
+                    window.statusBarColor = Color.White.toArgb()
+                    window.navigationBarColor = Color.White.toArgb()
+
+
+                }
+
                 var selectedTab by remember { mutableStateOf("Timer") }
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBarWithDivider(
+                        BottomNavigationBar(
                             selectedTab = selectedTab,
                             onTabSelected = { selectedTab = it }
                         )
@@ -40,6 +53,7 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding)
                             .fillMaxSize()
                             .background(Color.White)
+                            .navigationBarsPadding()
 
                     ) {
                         Header(title = if (selectedTab == "Timer") "Timer" else "Schedule")
