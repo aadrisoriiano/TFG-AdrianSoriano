@@ -109,8 +109,8 @@ class MainViewModel @Inject constructor(
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Guarda el modo anterior solo si no hay timer activo
-        if (previousRingerMode == null && previousDndMode == null) {
+        // Solo guarda el modo anterior si NO hay temporizador corriendo ni modo guardado
+        if (!_isTimerRunning.value && previousRingerMode == null && previousDndMode == null) {
             previousRingerMode = audioManager.ringerMode
             previousDndMode = notificationManager.currentInterruptionFilter
         }
