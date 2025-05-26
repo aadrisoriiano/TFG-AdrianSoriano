@@ -62,6 +62,9 @@ class MainViewModel @Inject constructor(
 
     private var timerJob: Job? = null
 
+    private var previousRingerMode: Int? = null
+    private var previousDndMode: Int? = null
+
     init {
         //deleteAllHorarios()
         preCargarSiEsNecesario()
@@ -95,17 +98,29 @@ class MainViewModel @Inject constructor(
                     db.temporizadorDao().insert(Temporizador(horas = 1, minutos = 0, activado = false, modo = Modo.SILENCIO))
                     db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 45, activado = false, modo = Modo.SILENCIO))
                     db.temporizadorDao().insert(Temporizador(horas = 2, minutos = 15, activado = false, modo = Modo.SONIDO))
-                    db.temporizadorDao().insert(Temporizador(horas = 5, minutos = 25, activado = false, modo = Modo.VIBRACION))
+                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 1, activado = false, modo = Modo.VIBRACION))
                 }
             }
         }
     }
 
     // --- NUEVO: Lógica de temporizador activo y control ---
-    fun startTimer(temporizador: Temporizador) {
+    fun startTimer(temporizador: Temporizador, context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Guarda el modo anterior solo si no hay timer activo
+        if (previousRingerMode == null && previousDndMode == null) {
+            previousRingerMode = audioManager.ringerMode
+            previousDndMode = notificationManager.currentInterruptionFilter
+        }
+
         _activeTimer.value = temporizador
         _remainingSeconds.value = (temporizador.horas * 3600) + (temporizador.minutos * 60)
         _isTimerRunning.value = true
+
+        setAudioMode(context, temporizador.modo)
+
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (_remainingSeconds.value > 0 && _isTimerRunning.value) {
@@ -113,6 +128,9 @@ class MainViewModel @Inject constructor(
                 _remainingSeconds.value -= 1
             }
             _isTimerRunning.value = false
+
+            // Restaura el modo anterior al terminar el timer
+            restorePreviousAudioMode(context)
         }
     }
 
@@ -167,5 +185,14 @@ class MainViewModel @Inject constructor(
             Modo.VIBRACION -> audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
             Modo.SONIDO -> audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
         }
+    }
+
+    fun restorePreviousAudioMode(context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        previousRingerMode?.let { audioManager.ringerMode = it }
+        previousDndMode?.let { notificationManager.setInterruptionFilter(it) }
+        previousRingerMode = null
+        previousDndMode = null
     }
 }

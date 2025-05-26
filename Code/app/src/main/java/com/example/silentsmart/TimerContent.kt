@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import com.example.silentsmart.database.entity.Temporizador
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimerContent(viewModel: MainViewModel) {
+    val context = LocalContext.current
     val temporizadores = viewModel.temporizadores.collectAsState(initial = emptyList()).value
     val activeTimer = viewModel.activeTimer.collectAsState().value
     val remainingSeconds = viewModel.remainingSeconds.collectAsState().value
@@ -61,7 +63,7 @@ fun TimerContent(viewModel: MainViewModel) {
             items(temporizadores.orEmpty().filterNotNull(), key = { it.id }) { temporizador ->
                 TimerCard(
                     temporizador = temporizador,
-                    onPlay = { viewModel.startTimer(temporizador) }
+                    onPlay = { viewModel.startTimer(temporizador, context) }
                 )
             }
         }
