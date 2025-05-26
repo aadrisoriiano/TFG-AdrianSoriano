@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                             .navigationBarsPadding()
 
                     ) {
-                        Header(title = if (selectedTab == "Timer") "Timer" else "Schedule")
+                        Header(title = if (selectedTab == "Timer") "Timer" else "Schedule", viewModel = mainViewModel)
                         Spacer(modifier = Modifier.height(2.dp))
                         when (selectedTab) {
                             "Timer" -> TimerContent(viewModel = mainViewModel)

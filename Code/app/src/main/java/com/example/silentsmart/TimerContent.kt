@@ -32,6 +32,9 @@ import com.example.silentsmart.database.entity.Temporizador
 @Composable
 fun TimerContent(viewModel: MainViewModel) {
     val temporizadores = viewModel.temporizadores.collectAsState(initial = emptyList()).value
+    val activeTimer = viewModel.activeTimer.collectAsState().value
+    val remainingSeconds = viewModel.remainingSeconds.collectAsState().value
+    val isTimerRunning = viewModel.isTimerRunning.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -39,27 +42,39 @@ fun TimerContent(viewModel: MainViewModel) {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TimerSection()
+        TimerSection(
+            activeTimer = activeTimer,
+            remainingSeconds = remainingSeconds,
+            isRunning = isTimerRunning,
+            onPauseResume = { viewModel.pauseOrResumeTimer() }
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        // Cambia aquí: usa Modifier.weight(1f) para que el grid ocupe todo el espacio restante
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(bottom = 0.dp), // Elimina padding extra abajo
+            contentPadding = PaddingValues(bottom = 0.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // <-- Esto hace que llegue hasta el footer
+                .weight(1f)
         ) {
             items(temporizadores.orEmpty().filterNotNull(), key = { it.id }) { temporizador ->
-                TimerCard(temporizador)
+                TimerCard(
+                    temporizador = temporizador,
+                    onPlay = { viewModel.startTimer(temporizador) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun TimerSection() {
+fun TimerSection(
+    activeTimer: Temporizador?,
+    remainingSeconds: Int,
+    isRunning: Boolean,
+    onPauseResume: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,8 +88,16 @@ fun TimerSection() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val display = if (activeTimer != null)
+                String.format(
+                    "%dh %02dm %02ds",
+                    remainingSeconds / 3600,
+                    (remainingSeconds % 3600) / 60,
+                    remainingSeconds % 60
+                )
+            else "0h 0m 0s" // <-- Cambia aquí para mostrar ceros si no hay temporizador activo
             Text(
-                text = "1 : 50 : 30",
+                text = display,
                 fontSize = 50.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
@@ -93,20 +116,27 @@ fun TimerSection() {
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
-                        onClick = { /* Acción para parar */ },
-                        modifier = Modifier.size(28.dp)
+                        onClick = onPauseResume,
+                        modifier = Modifier.size(28.dp),
+                        enabled = activeTimer != null
                     ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Parar")
+                        Icon(
+                            imageVector = if (isRunning) Icons.Default.Clear else Icons.Default.PlayArrow,
+                            contentDescription = if (isRunning) "Pausar" else "Continuar"
+                        )
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
 
 @Composable
-fun TimerCard(temporizador: Temporizador) {
+fun TimerCard(
+    temporizador: Temporizador,
+    onPlay: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,7 +180,7 @@ fun TimerCard(temporizador: Temporizador) {
                     contentAlignment = Alignment.Center
                 ) {
                     IconButton(
-                        onClick = { /* Play */ },
+                        onClick = onPlay,
                         modifier = Modifier.size(28.dp)
                     ) {
                         Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")

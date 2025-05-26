@@ -27,8 +27,10 @@ import androidx.compose.ui.unit.sp
 import com.example.silentsmart.ui.theme.SilentSmartTheme
 import com.example.silentsmart.R
 
+import androidx.compose.ui.platform.LocalContext
+
 @Composable
-fun Header(title: String) {
+fun Header(title: String, viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,7 +39,7 @@ fun Header(title: String) {
     ) {
         TopButtons()
         Title(title)
-        ThreeColumnButtons()
+        ThreeColumnButtons(viewModel)
     }
 }
 @Composable
@@ -120,11 +122,12 @@ fun Title(title: String) {
 }
 
 @Composable
-fun ThreeColumnButtons() {
+fun ThreeColumnButtons(viewModel: MainViewModel) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(12.dp, RoundedCornerShape(30.dp)) // Sombra y mismo radio que el clip
+            .shadow(12.dp, RoundedCornerShape(30.dp))
             .clip(RoundedCornerShape(30.dp))
             .background(Color.LightGray)
             .padding(2.dp)
@@ -135,7 +138,7 @@ fun ThreeColumnButtons() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { /* Acción para silenciar el móvil */ }
+                onClick = { viewModel.setAudioMode(context, Modo.SILENCIO) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.volume_off),
@@ -144,7 +147,7 @@ fun ThreeColumnButtons() {
                 )
             }
             IconButton(
-                onClick = { /* Acción para poner en vibración */ }
+                onClick = { viewModel.setAudioMode(context, Modo.VIBRACION) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.vibration),
@@ -153,7 +156,7 @@ fun ThreeColumnButtons() {
                 )
             }
             IconButton(
-                onClick = { /* Acción para modo sonido */ }
+                onClick = { viewModel.setAudioMode(context, Modo.SONIDO) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.volume_up),
