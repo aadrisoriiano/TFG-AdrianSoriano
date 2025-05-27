@@ -83,14 +83,17 @@ fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Switch(
+                   Switch(
                         checked = horario.activado,
                         onCheckedChange = { checked -> viewModel.setHorarioActivado(horario, checked) },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color(0xFF4CAF50),
-                            checkedTrackColor = Color.Green
-                        )
-                    )
+                            checkedThumbColor = Color(0xFF98FF98),     // Verde pastel
+                            checkedTrackColor = Color(0xFF77DD77),     // Verde pastel
+                            uncheckedThumbColor = Color(0xFF666666),   // Gris claro para el thumb (círculo)
+                            uncheckedTrackColor = Color(0xFF999999)    // Gris más claro para la pista
+    )
+)
+
                 }
             }
         }
