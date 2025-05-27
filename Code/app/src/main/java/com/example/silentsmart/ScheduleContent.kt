@@ -33,13 +33,13 @@ fun ScheduleContent(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(horarios.orEmpty().filterNotNull(), key = { it.id }) { horario ->
-            ScheduleCard(horario)
+            ScheduleCard(horario,viewModel)
         }
     }
 }
 
 @Composable
-fun ScheduleCard(horario: Horario) {
+fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,7 +85,7 @@ fun ScheduleCard(horario: Horario) {
 
                     Switch(
                         checked = horario.activado,
-                        onCheckedChange = { /* Cambiar activado */ },
+                        onCheckedChange = { checked -> viewModel.setHorarioActivado(horario, checked) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color(0xFF4CAF50),
                             checkedTrackColor = Color.Green

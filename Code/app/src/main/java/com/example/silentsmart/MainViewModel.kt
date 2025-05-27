@@ -23,8 +23,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,6 +63,7 @@ class MainViewModel @Inject constructor(
     val isTimerRunning: StateFlow<Boolean> = _isTimerRunning
 
     private var timerJob: Job? = null
+    private var scheduleJob: Job? = null
 
     private var previousRingerMode: Int? = null
     private var previousDndMode: Int? = null
@@ -68,49 +71,89 @@ class MainViewModel @Inject constructor(
     init {
         //deleteAllHorarios()
         preCargarSiEsNecesario()
+        startScheduleChecker()
     }
 
-    private fun deleteAllHorarios() {
-        val sharedPreferences = getApplication<Application>().getSharedPreferences("app_prefs", Application.MODE_PRIVATE)
-        val datosPrecargados = sharedPreferences.getBoolean("datos_precargados", false)
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                db.temporizadorDao().deleteAll()
-                db.horarioDao().deleteAll()
-                sharedPreferences.edit().putBoolean("datos_precargados", false).apply()
+    // --- Comprobación periódica de horarios ---
+    private fun startScheduleChecker() {
+        scheduleJob?.cancel()
+        scheduleJob = viewModelScope.launch {
+            while (true) {
+                checkAndApplyActiveScheduleOrTimer()
+                delay(60_000) // Comprobar cada minuto
             }
         }
     }
 
-    private fun preCargarSiEsNecesario() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val horarios = db.horarioDao().all.firstOrNull().orEmpty()
-                val temporizadores = db.temporizadorDao().all.firstOrNull().orEmpty()
+    private fun checkAndApplyActiveScheduleOrTimer() {
+        val context = getApplication<Application>().applicationContext
+        val horariosActivos = horarios.value?.filterNotNull()?.filter { it.activado } ?: emptyList()
+        val now = LocalTime.now()
+        val today = LocalDate.now().dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
-                if (horarios.isEmpty()) {
-                    db.horarioDao().insert(Horario(diaSemana = "Lunes", horaInicio = "08:00", horaFin = "09:00", activado = false, modo = Modo.SILENCIO))
-                    db.horarioDao().insert(Horario(diaSemana = "Martes", horaInicio = "10:00", horaFin = "11:00", activado = false, modo = Modo.VIBRACION))
-                    db.horarioDao().insert(Horario(diaSemana = "Miércoles", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SONIDO))
-                }
+        val horarioEnCurso = horariosActivos?.firstOrNull { horario ->
+            horario?.diaSemana.equals(today, ignoreCase = true)
+                    && try {
+                        val inicio = LocalTime.parse(horario?.horaInicio, formatter)
+                        val fin = LocalTime.parse(horario?.horaFin, formatter)
+                        now.isAfter(inicio) && now.isBefore(fin)
+                    } catch (e: Exception) {
+                        false
+                    }
+        }
 
-                if (temporizadores.isEmpty()) {
-                    db.temporizadorDao().insert(Temporizador(horas = 1, minutos = 0, activado = false, modo = Modo.SILENCIO))
-                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 45, activado = false, modo = Modo.SILENCIO))
-                    db.temporizadorDao().insert(Temporizador(horas = 2, minutos = 15, activado = false, modo = Modo.SONIDO))
-                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 1, activado = false, modo = Modo.VIBRACION))
-                }
+        if (horarioEnCurso != null) {
+            // Si hay horario activo, guarda el modo anterior solo si no hay timer ni modo guardado
+            if (!_isTimerRunning.value && previousRingerMode == null && previousDndMode == null) {
+                val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                previousRingerMode = audioManager.ringerMode
+                previousDndMode = notificationManager.currentInterruptionFilter
+            }
+            setAudioMode(context, horarioEnCurso.modo)
+        } else {
+            // Si NO hay horario activo, pero hay temporizador activo, manda el temporizador
+            val timer = _activeTimer.value
+            val running = _isTimerRunning.value
+            if (timer != null && running && _remainingSeconds.value > 0) {
+                setAudioMode(context, timer.modo)
+            } else {
+                // Si no hay ni horario ni temporizador, restaura el modo anterior
+                restorePreviousAudioMode(context)
             }
         }
     }
 
-    // --- NUEVO: Lógica de temporizador activo y control ---
+    // --- Cambia el estado del horario ---
+    fun setHorarioActivado(horario: Horario, activado: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.horarioDao().update(horario.copy(activado = activado))
+        }
+    }
+
+    // --- Lógica de temporizador activo y control ---
     fun startTimer(temporizador: Temporizador, context: Context) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Solo guarda el modo anterior si NO hay temporizador corriendo ni modo guardado
-        if (!_isTimerRunning.value && previousRingerMode == null && previousDndMode == null) {
+        // Solo guarda el modo anterior si NO hay temporizador corriendo, NO hay horario activo y no está guardado
+        val horariosActivos = horarios.value?.filterNotNull()?.filter { it.activado } ?: emptyList()
+        val now = LocalTime.now()
+        val today = LocalDate.now().dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        val horarioEnCurso = horariosActivos?.firstOrNull { horario ->
+            horario?.diaSemana.equals(today, ignoreCase = true)
+                    && try {
+                        val inicio = LocalTime.parse(horario?.horaInicio, formatter)
+                        val fin = LocalTime.parse(horario?.horaFin, formatter)
+                        now.isAfter(inicio) && now.isBefore(fin)
+                    } catch (e: Exception) {
+                        false
+                    }
+        }
+
+        if (!_isTimerRunning.value && horarioEnCurso == null && previousRingerMode == null && previousDndMode == null) {
             previousRingerMode = audioManager.ringerMode
             previousDndMode = notificationManager.currentInterruptionFilter
         }
@@ -129,8 +172,8 @@ class MainViewModel @Inject constructor(
             }
             _isTimerRunning.value = false
 
-            // Restaura el modo anterior al terminar el timer
-            restorePreviousAudioMode(context)
+            // Al terminar el timer, si hay horario activo, no restaures; si no, sí
+            checkAndApplyActiveScheduleOrTimer()
         }
     }
 
@@ -155,13 +198,8 @@ class MainViewModel @Inject constructor(
         _isTimerRunning.value = false
         _activeTimer.value = null
         _remainingSeconds.value = 0
-    }
-
-    // --- (Opcional) Mantén tu función original para compatibilidad ---
-    fun startTemporizador(temporizador: Temporizador) {
-        viewModelScope.launch {
-            db.temporizadorDao().update(temporizador.copy(activado = true))
-        }
+        // Al parar, aplica la lógica de prioridad
+        checkAndApplyActiveScheduleOrTimer()
     }
 
     fun requestDoNotDisturbPermission(context: Context) {
@@ -194,5 +232,38 @@ class MainViewModel @Inject constructor(
         previousDndMode?.let { notificationManager.setInterruptionFilter(it) }
         previousRingerMode = null
         previousDndMode = null
+    }
+
+    private fun preCargarSiEsNecesario() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val horarios = db.horarioDao().all.firstOrNull().orEmpty()
+                val temporizadores = db.temporizadorDao().all.firstOrNull().orEmpty()
+
+                if (horarios.isEmpty()) {
+                    db.horarioDao().insert(Horario(diaSemana = "Lunes", horaInicio = "08:00", horaFin = "09:00", activado = false, modo = Modo.SILENCIO))
+                    db.horarioDao().insert(Horario(diaSemana = "Martes", horaInicio = "19:05", horaFin = "19:07", activado = false, modo = Modo.VIBRACION))
+                    db.horarioDao().insert(Horario(diaSemana = "Miércoles", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SONIDO))
+                }
+
+                if (temporizadores.isEmpty()) {
+                    db.temporizadorDao().insert(Temporizador(horas = 1, minutos = 0, activado = false, modo = Modo.SILENCIO))
+                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 45, activado = false, modo = Modo.SILENCIO))
+                    db.temporizadorDao().insert(Temporizador(horas = 2, minutos = 15, activado = false, modo = Modo.SONIDO))
+                    db.temporizadorDao().insert(Temporizador(horas = 0, minutos = 1, activado = false, modo = Modo.VIBRACION))
+                }
+            }
+        }
+    }
+    private fun deleteAllHorarios() {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("app_prefs", Application.MODE_PRIVATE)
+        val datosPrecargados = sharedPreferences.getBoolean("datos_precargados", false)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                db.temporizadorDao().deleteAll()
+                db.horarioDao().deleteAll()
+                sharedPreferences.edit().putBoolean("datos_precargados", false).apply()
+            }
+        }
     }
 }
