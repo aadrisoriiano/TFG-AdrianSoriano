@@ -102,8 +102,9 @@ ktlint {
         reporter(ReporterType.HTML)
     }
     filter {
-        exclude("**/*.gradle.kts")
         exclude("**/src/test/**")
+        exclude("**/src/androidTest/**")
+        exclude("**/*.gradle.kts")
     }
 }
 
