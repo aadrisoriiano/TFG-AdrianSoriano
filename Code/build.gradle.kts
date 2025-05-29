@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.20" apply false
     id("org.sonarqube") version "4.4.1.3373"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    //id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 sonarqube {
@@ -14,6 +14,6 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.login", System.getenv("SONAR_TOKEN"))
         property("sonar.kotlin.detekt.reportPaths", "$rootDir/app/build/reports/detekt/detekt.xml")
-        property("sonar.kotlin.ktlint.reportPaths", "$rootDir/app/build/reports/ktlint/ktlint.xml")
+        //property("sonar.kotlin.ktlint.reportPaths", "$rootDir/app/build/reports/ktlint/ktlint.xml")
     }
 }

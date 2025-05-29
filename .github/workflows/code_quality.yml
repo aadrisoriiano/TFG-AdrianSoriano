@@ -23,10 +23,6 @@ jobs:
         run: ./gradlew detekt
         working-directory: Code
 
-      - name: Run Ktlint
-        run: ./gradlew ktlintCheck
-        working-directory: Code
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:

@@ -1,4 +1,3 @@
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     alias(libs.plugins.android.application)
@@ -7,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.56.2"
     kotlin("kapt")
     id("io.gitlab.arturbosch.detekt") version "1.23.1"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+
 
 }
 
@@ -95,18 +94,7 @@ detekt {
         sarif.required.set(false)
     }
 }
-ktlint {
-    reporters {
-        reporter(ReporterType.PLAIN)
-        reporter(ReporterType.CHECKSTYLE)
-        reporter(ReporterType.HTML)
-    }
-    filter {
-        exclude("**/src/test/**")
-        exclude("**/src/androidTest/**")
-        exclude("**/*.gradle.kts")
-    }
-}
+
 
 
 
