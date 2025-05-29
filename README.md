@@ -4,7 +4,7 @@
 
 ## Reportes automáticos de calidad de código
 
-- [Detekt Report]([https://github.com/aadrisoriiano/TFG-AdrianSoriano/blob/gh-pages/detekt.html](https://aadrisoriiano.github.io/TFG-AdrianSoriano/detekt.html))
+- [Detekt Report](https://aadrisoriiano.github.io/TFG-AdrianSoriano/detekt.html)
 
 ## Estado y calidad del código con SonarCloud
 
