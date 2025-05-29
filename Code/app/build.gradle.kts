@@ -83,7 +83,7 @@ hilt {
 detekt {
     buildUponDefaultConfig = true
     allRules = false
-    //config = files("$rootDir/detekt-config.yml")
+    config = files("$rootDir/detekt-config.yml")
     source = files("$rootDir/app/src/main/java")
     reports {
         html.required.set(true)
