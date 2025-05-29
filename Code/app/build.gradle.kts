@@ -103,6 +103,7 @@ ktlint {
     }
     filter {
         exclude("**/*.gradle.kts")
+        exclude("**/src/test/**")
     }
 }
 
