@@ -92,3 +92,4 @@ detekt {
         sarif.required.set(false)
     }
 }
+
