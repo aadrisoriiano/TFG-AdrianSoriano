@@ -9,7 +9,7 @@
 ## Estado y calidad del código con SonarCloud
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=aadrisoriiano_TFG-AdrianSoriano&metric=alert_status)](https://sonarcloud.io/dashboard?id=aadrisoriiano_TFG-AdrianSoriano)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=aadrisoriiano_TFG-AdrianSoriano&metric=bugs&token=3aae8f8068e7404570c849352dbf5025ae08f91a)
+[![Bugs]
 
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=aadrisoriiano_TFG-AdrianSoriano&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=aadrisoriiano_TFG-AdrianSoriano)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=aadrisoriiano_TFG-AdrianSoriano&metric=security_rating)](https://sonarcloud.io/dashboard?id=aadrisoriiano_TFG-AdrianSoriano)
