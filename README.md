@@ -4,5 +4,5 @@
 
 ## Reportes automáticos de calidad de código
 
-- [Detekt Report](https://aadrisoriiano.github.io/TFG-AdrianSoriano/detekt.html)
-- [Ktlint Report](https://aadrisoriiano.github.io/TFG-AdrianSoriano/ktlint.html)
+- [Detekt Report](https://github.com/aadrisoriiano/TFG-AdrianSoriano/blob/gh-pages/detekt.html)
+
