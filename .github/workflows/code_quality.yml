@@ -34,7 +34,6 @@ jobs:
         run: |
           mkdir -p reports
           cp Code/app/build/reports/detekt/detekt.html reports/detekt.html || echo "Detekt report not found"
-          cp Code/app/build/reports/ktlint/ktlint.html reports/ktlint.html || echo "Ktlint report not found"
 
       - name: Publish report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
