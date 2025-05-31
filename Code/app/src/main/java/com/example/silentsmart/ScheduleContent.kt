@@ -21,6 +21,7 @@ import com.example.silentsmart.R
 import com.example.silentsmart.database.entity.Horario
 import com.example.silentsmart.Modo
 import androidx.compose.ui.text.font.FontWeight
+import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @Composable
 fun ScheduleContent(viewModel: MainViewModel) {
@@ -59,12 +60,14 @@ fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
                 Column {
                     Text(
                         text = horario.diaSemana,
+                        fontFamily = WdxFontFamily,
                         fontSize = 22.sp, // Más grande
                         fontWeight = FontWeight.Bold, // En negrita
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
                         text = "${horario.horaInicio} - ${horario.horaFin}",
+                        fontFamily = WdxFontFamily,
                         fontSize = 18.sp
                     )
                 }

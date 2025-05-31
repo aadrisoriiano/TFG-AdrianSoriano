@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.silentsmart.ui.theme.WdxFontFamily // <-- Importa tu font
 
 @Composable
 fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
@@ -54,14 +55,15 @@ fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
                     Text(
                         "Timer",
                         fontSize = 14.sp,
-                        fontWeight = if (selectedTab == "Timer") FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (selectedTab == "Timer") FontWeight.Bold else FontWeight.Normal,
+                        fontFamily = WdxFontFamily // 
                     )
                 },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF570606),
+                    selectedIconColor = Color(0xFF222222),
                     unselectedIconColor = Color.Gray,
-                    selectedTextColor = Color(0xFF570606),
+                    selectedTextColor = Color(0xFF222222),
                     unselectedTextColor = Color.Gray,
                     indicatorColor = Color(0xFFF2F2F2)
                 )
@@ -80,14 +82,15 @@ fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
                     Text(
                         "Schedule",
                         fontSize = 14.sp,
-                        fontWeight = if (selectedTab == "Schedule") FontWeight.Bold else FontWeight.Normal
+                        fontWeight = if (selectedTab == "Schedule") FontWeight.Bold else FontWeight.Normal,
+                        fontFamily = WdxFontFamily
                     )
                 },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF570606),
+                    selectedIconColor = Color(0xFF222222),
                     unselectedIconColor = Color.Gray,
-                    selectedTextColor = Color(0xFF570606),
+                    selectedTextColor = Color(0xFF222222),
                     unselectedTextColor = Color.Gray,
                     indicatorColor = Color(0xFFF2F2F2)
                 )

@@ -40,12 +40,15 @@ class MainActivity : ComponentActivity() {
                 }
 
                 var selectedTab by remember { mutableStateOf("Timer") }
+                var showAddEdit by remember { mutableStateOf(false) }
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBar(
-                            selectedTab = selectedTab,
-                            onTabSelected = { selectedTab = it }
-                        )
+                        if (!showAddEdit) { // Solo muestra el bottom bar si NO estás en AddEditScreen
+                            BottomNavigationBar(
+                                selectedTab = selectedTab,
+                                onTabSelected = { selectedTab = it }
+                            )
+                        }
                     }
                 ) { innerPadding ->
                     Column(
@@ -56,11 +59,33 @@ class MainActivity : ComponentActivity() {
                             .navigationBarsPadding()
 
                     ) {
-                        Header(title = if (selectedTab == "Timer") "Timer" else "Schedule", viewModel = mainViewModel)
-                        Spacer(modifier = Modifier.height(2.dp))
-                        when (selectedTab) {
-                            "Timer" -> TimerContent(viewModel = mainViewModel)
-                            "Schedule" -> ScheduleContent(viewModel = mainViewModel)
+                        if (showAddEdit) {
+                            AddEditScreen(
+                                onSave = { isTimer, modo, hours, minutes, day, startHour, endHour ->
+                                    mainViewModel.addRegistro(
+                                        isTimer,
+                                        modo,
+                                        hours,
+                                        minutes,
+                                        day,
+                                        startHour,
+                                        endHour
+                                    )
+                                    showAddEdit = false
+                                },
+                                onCancel = { showAddEdit = false }
+                            )
+                        } else {
+                            Header(
+                                title = if (selectedTab == "Timer") "Timer" else "Schedule",
+                                viewModel = mainViewModel,
+                                onAddClick = { showAddEdit = true }
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            when (selectedTab) {
+                                "Timer" -> TimerContent(viewModel = mainViewModel)
+                                "Schedule" -> ScheduleContent(viewModel = mainViewModel)
+                            }
                         }
                     }
                 }

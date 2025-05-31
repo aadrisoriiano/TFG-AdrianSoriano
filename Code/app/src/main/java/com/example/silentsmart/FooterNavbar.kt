@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.silentsmart.ui.theme.SilentSmartTheme
+import com.example.silentsmart.ui.theme.WdxFontFamily
 
 
 @Composable
@@ -22,13 +23,13 @@ fun FooterNavBar() {
             selected = true,
             onClick = { /*TODO*/ },
             icon = { Icon( Icons.Filled.Notifications , null) },
-            label = { Text(text = "Timer") }
+            label = { Text(text = "TIMER", fontFamily = WdxFontFamily) }
         )
         NavigationBarItem(
             selected = false,
             onClick = { /*TODO*/ },
             icon = { Icon( Icons.Filled.DateRange, null) },
-            label = { Text(text = "Schedule")}
+            label = { Text(text = "SCHEDULE",fontFamily = WdxFontFamily)}
         )
     }
 }

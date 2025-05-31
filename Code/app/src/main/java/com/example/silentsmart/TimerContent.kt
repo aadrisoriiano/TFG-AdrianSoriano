@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.silentsmart.R
 import com.example.silentsmart.database.entity.Temporizador
+import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -48,7 +49,7 @@ fun TimerContent(viewModel: MainViewModel) {
             activeTimer = activeTimer,
             remainingSeconds = remainingSeconds,
             isRunning = isTimerRunning,
-            onPauseResume = { viewModel.pauseOrResumeTimer() }
+            onPauseResume = { viewModel.pauseOrResumeTimer(context) }
         )
         Spacer(modifier = Modifier.height(4.dp))
         LazyVerticalGrid(
@@ -97,11 +98,12 @@ fun TimerSection(
                     (remainingSeconds % 3600) / 60,
                     remainingSeconds % 60
                 )
-            else "0h 0m 0s" // <-- Cambia aquí para mostrar ceros si no hay temporizador activo
+            else "00h 00m 00s"
             Text(
                 text = display,
                 fontSize = 50.sp,
                 color = Color.Black,
+                fontFamily = WdxFontFamily,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 2.sp
             )
@@ -159,6 +161,7 @@ fun TimerCard(
                 text = "${temporizador.horas}h ${temporizador.minutos}m",
                 fontSize = 32.sp,
                 color = Color.Black,
+                fontFamily = WdxFontFamily,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(2.dp))

@@ -28,22 +28,23 @@ import com.example.silentsmart.ui.theme.SilentSmartTheme
 import com.example.silentsmart.R
 
 import androidx.compose.ui.platform.LocalContext
+import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @Composable
-fun Header(title: String, viewModel: MainViewModel) {
+fun Header(title: String, viewModel: MainViewModel, onAddClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TopButtons()
+        TopButtons(onAddClick)
         Title(title)
         ThreeColumnButtons(viewModel)
     }
 }
 @Composable
-fun TopButtons() {
+fun TopButtons(onAddClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -67,6 +68,7 @@ fun TopButtons() {
             ) {
                 Text(
                     text = "Edit",
+                    fontFamily = WdxFontFamily,
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -86,7 +88,7 @@ fun TopButtons() {
             contentAlignment = Alignment.Center
         ) {
             TextButton(
-                onClick = { /* Acción del botón + */ },
+                onClick = { onAddClick() }, // Acción del botón +, ahora con onAddClick
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(0.dp)
             ) {
@@ -94,6 +96,7 @@ fun TopButtons() {
                     text = "+",
                     color = Color.Black,
                     fontSize = 18.sp,
+                    fontFamily = WdxFontFamily,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -104,18 +107,19 @@ fun TopButtons() {
 @Composable
 fun Title(title: String) {
     Text(
-        text = title,
+        text = title.uppercase(), // Mayúsculas
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 15.dp),
-        color = Color.Black,
-        fontSize = 40.sp,
+        color = Color.Black, // Negro
+        fontFamily = WdxFontFamily,
+        fontSize = 50.sp,
         fontWeight = FontWeight.Bold,
         style = LocalTextStyle.current.copy(
             shadow = Shadow(
-                color = Color(0xFF570606),
+                color = Color(0xFF666666),
                 offset = Offset(2f, 2f),
-                blurRadius = 5f
+                blurRadius = 12f
             )
         )
     )

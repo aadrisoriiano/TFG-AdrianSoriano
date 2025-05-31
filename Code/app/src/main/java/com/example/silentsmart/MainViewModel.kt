@@ -132,34 +132,21 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    // --- Lógica de temporizador activo y control ---
-    fun startTimer(temporizador: Temporizador, context: Context) {
+    fun startTimer(temporizador: Temporizador, context: Context, reset: Boolean = true) {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Solo guarda el modo anterior si NO hay temporizador corriendo, NO hay horario activo y no está guardado
-        val horariosActivos = horarios.value?.filterNotNull()?.filter { it.activado } ?: emptyList()
-        val now = LocalTime.now()
-        val today = LocalDate.now().dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val horarioEnCurso = horariosActivos?.firstOrNull { horario ->
-            horario?.diaSemana.equals(today, ignoreCase = true)
-                    && try {
-                        val inicio = LocalTime.parse(horario?.horaInicio, formatter)
-                        val fin = LocalTime.parse(horario?.horaFin, formatter)
-                        now.isAfter(inicio) && now.isBefore(fin)
-                    } catch (e: Exception) {
-                        false
-                    }
-        }
-
-        if (!_isTimerRunning.value && horarioEnCurso == null && previousRingerMode == null && previousDndMode == null) {
+        // SOLO guardar el modo anterior si reset==true (inicio desde cero)
+        if (reset && _activeTimer.value == null && previousRingerMode == null && previousDndMode == null) {
             previousRingerMode = audioManager.ringerMode
             previousDndMode = notificationManager.currentInterruptionFilter
         }
 
         _activeTimer.value = temporizador
-        _remainingSeconds.value = (temporizador.horas * 3600) + (temporizador.minutos * 60)
+
+        if (reset) {
+            _remainingSeconds.value = (temporizador.horas * 3600) + (temporizador.minutos * 60)
+        }
         _isTimerRunning.value = true
 
         setAudioMode(context, temporizador.modo)
@@ -171,27 +158,28 @@ class MainViewModel @Inject constructor(
                 _remainingSeconds.value -= 1
             }
             _isTimerRunning.value = false
+            _activeTimer.value = null
 
-            // Al terminar el timer, si hay horario activo, no restaures; si no, sí
+            // Restaurar solo si había modo previo guardado
+            val ctx = getApplication<Application>().applicationContext
+            if (previousRingerMode != null || previousDndMode != null) {
+                restorePreviousAudioMode(ctx)
+            }
             checkAndApplyActiveScheduleOrTimer()
         }
     }
 
-    fun pauseOrResumeTimer() {
+
+    fun pauseOrResumeTimer(context: Context) {
         _isTimerRunning.value = !_isTimerRunning.value
         if (_isTimerRunning.value) {
-            timerJob?.cancel()
-            timerJob = viewModelScope.launch {
-                while (_remainingSeconds.value > 0 && _isTimerRunning.value) {
-                    delay(1000)
-                    _remainingSeconds.value -= 1
-                }
-                _isTimerRunning.value = false
-            }
+            // Al reanudar, NUNCA resetear ni guardar modo previo
+            startTimer(_activeTimer.value!!, context, reset = false)
         } else {
             timerJob?.cancel()
         }
     }
+
 
     fun stopTimer() {
         timerJob?.cancel()
@@ -244,6 +232,9 @@ class MainViewModel @Inject constructor(
                     db.horarioDao().insert(Horario(diaSemana = "Lunes", horaInicio = "08:00", horaFin = "09:00", activado = false, modo = Modo.SILENCIO))
                     db.horarioDao().insert(Horario(diaSemana = "Martes", horaInicio = "19:05", horaFin = "19:07", activado = false, modo = Modo.VIBRACION))
                     db.horarioDao().insert(Horario(diaSemana = "Miércoles", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SONIDO))
+                    db.horarioDao().insert(Horario(diaSemana = "Sábado", horaInicio = "14:10", horaFin = "14:15", activado = false, modo = Modo.SILENCIO))
+                    db.horarioDao().insert(Horario(diaSemana = "Sábado", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SILENCIO))
+                    db.horarioDao().insert(Horario(diaSemana = "Sábado", horaInicio = "14:00", horaFin = "15:00", activado = false, modo = Modo.SILENCIO))
                 }
 
                 if (temporizadores.isEmpty()) {
@@ -263,6 +254,39 @@ class MainViewModel @Inject constructor(
                 db.temporizadorDao().deleteAll()
                 db.horarioDao().deleteAll()
                 sharedPreferences.edit().putBoolean("datos_precargados", false).apply()
+            }
+        }
+    }
+
+    fun addRegistro(
+        isTimer: Boolean,
+        modo: Modo,
+        hours: Int?,
+        minutes: Int?,
+        day: String?,
+        startHour: String?,
+        endHour: String?
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isTimer) {
+                db.temporizadorDao().insert(
+                    Temporizador(
+                        horas = hours ?: 0,
+                        minutos = minutes ?: 0,
+                        activado = false,
+                        modo = modo
+                    )
+                )
+            } else {
+                db.horarioDao().insert(
+                    Horario(
+                        diaSemana = day ?: "Monday",
+                        horaInicio = startHour ?: "08:00",
+                        horaFin = endHour ?: "09:00",
+                        activado = false,
+                        modo = modo
+                    )
+                )
             }
         }
     }
