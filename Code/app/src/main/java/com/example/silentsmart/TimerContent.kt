@@ -132,10 +132,17 @@ fun TimerSection(
                         modifier = Modifier.size(28.dp),
                         enabled = activeTimer != null
                     ) {
-                        Icon(
-                            imageVector = if (isRunning) Icons.Default.Clear else Icons.Default.PlayArrow,
-                            contentDescription = if (isRunning) "Pausar" else "Continuar"
-                        )
+                       if (isRunning) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.pause_icon),
+                                contentDescription = "Pausar"
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Continuar"
+                            )
+                        }
                     }
                 }
             }
