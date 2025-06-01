@@ -71,7 +71,7 @@ fun AddEditScreen(
     ) {
         // Título
         Text(
-            text = "Nuevo",
+            text = if (isEdit) "Editar" else "Nuevo",
             fontFamily = WdxFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 28.sp,
@@ -376,7 +376,7 @@ fun AddEditScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(horizontal = 24.dp, vertical = 10.dp)
+                .padding(horizontal = 6.dp, vertical = 32.dp) // Más ancho y más abajo
         ) {
             Row(
                 modifier = Modifier
@@ -396,7 +396,7 @@ fun AddEditScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     modifier = buttonModifier
                 ) {
-                    Text("Salir", fontFamily = WdxFontFamily, color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text("Cancelar", fontFamily = WdxFontFamily, color = Color.Black, fontWeight = FontWeight.Bold)
                 }
                 if (isEdit && onDelete != null) {
                     Button(
