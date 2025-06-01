@@ -74,7 +74,7 @@ fun TopButtons(onAddClick: () -> Unit, onEditClick: () -> Unit, isEditMode: Bool
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = if (isEditMode) "Cancelar" else "Edit",
+                    text = if (isEditMode) "Cancelar" else "Editar",
                     fontFamily = WdxFontFamily,
                     color = Color.Black,
                     fontSize = 14.sp,

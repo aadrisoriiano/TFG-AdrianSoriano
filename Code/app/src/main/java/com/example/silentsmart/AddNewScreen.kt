@@ -89,11 +89,15 @@ fun AddEditScreen(
                 Button(
                     onClick = { selectedType = "timer" },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isEdit || selectedType == "timer", // Solo habilitado si no es edición o si ya es timer
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedType == "timer") Color(0xFFB2FFB2) else Color.White
                     )
                 ) {
-                    Icon(Icons.Default.Notifications, contentDescription = "Temporizador")
+                    Icon(
+                        painter = painterResource(id = R.drawable.timer_icon),
+                        contentDescription = "Temporizador"
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text("Temporizador", fontFamily = WdxFontFamily)
                 }
@@ -101,6 +105,7 @@ fun AddEditScreen(
                 Button(
                     onClick = { selectedType = "schedule" },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !isEdit || selectedType == "schedule", // Solo habilitado si no es edición o si ya es schedule
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedType == "schedule") Color(0xFFB2FFB2) else Color.White
                     )

@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SilentSmartTheme {
                 val mainViewModel = remember { MainViewModel(application) }
-                var selectedTab by remember { mutableStateOf("Timer") }
+                var selectedTab by remember { mutableStateOf("Temporizador") }
                 var showAddEdit by remember { mutableStateOf(false) }
                 var editTimer: Temporizador? by remember { mutableStateOf(null) }
                 var editHorario: Horario? by remember { mutableStateOf(null) }
@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
                             )
                         } else {
                             Header(
-                                title = if (selectedTab == "Timer") "Timer" else "Schedule",
+                                title = selectedTab,
                                 viewModel = mainViewModel,
                                 onAddClick = { 
                                     editTimer = null
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             when (selectedTab) {
-                                "Timer" -> TimerContent(
+                                "Temporizador" -> TimerContent(
                                     viewModel = mainViewModel,
                                     editMode = editMode,
                                     onTimerSelected = { temporizador ->
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                                         editMode = false
                                     }
                                 )
-                                "Schedule" -> ScheduleContent(
+                                "Horario" -> ScheduleContent(
                                     viewModel = mainViewModel,
                                     editMode = editMode,
                                     onHorarioSelected = { horario ->

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,20 +43,20 @@ fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             NavigationBarItem(
-                selected = selectedTab == "Timer",
-                onClick = { onTabSelected("Timer") },
+                selected = selectedTab == "Temporizador",
+                onClick = { onTabSelected("Temporizador") },
                 icon = {
                     Icon(
-                        Icons.Default.Notifications,
-                        contentDescription = "Timer",
+                        painter = painterResource(id = R.drawable.timer_icon),
+                        contentDescription = "Temporizador",
                         modifier = Modifier.size(32.dp)
                     )
                 },
                 label = {
                     Text(
-                        "Timer",
+                        "Temporizador",
                         fontSize = 14.sp,
-                        fontWeight = if (selectedTab == "Timer") FontWeight.Bold else FontWeight.Normal,
+                        fontWeight = if (selectedTab == "Temporizador") FontWeight.Bold else FontWeight.Normal,
                         fontFamily = WdxFontFamily // 
                     )
                 },
@@ -69,20 +70,20 @@ fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
                 )
             )
             NavigationBarItem(
-                selected = selectedTab == "Schedule",
-                onClick = { onTabSelected("Schedule") },
+                selected = selectedTab == "Horario",
+                onClick = { onTabSelected("Horario") },
                 icon = {
                     Icon(
                         Icons.Default.DateRange,
-                        contentDescription = "Schedule",
+                        contentDescription = "Horario",
                         modifier = Modifier.size(32.dp)
                     )
                 },
                 label = {
                     Text(
-                        "Schedule",
+                        "Horario",
                         fontSize = 14.sp,
-                        fontWeight = if (selectedTab == "Schedule") FontWeight.Bold else FontWeight.Normal,
+                        fontWeight = if (selectedTab == "Horario") FontWeight.Bold else FontWeight.Normal,
                         fontFamily = WdxFontFamily
                     )
                 },
