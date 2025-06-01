@@ -9,7 +9,7 @@ import com.example.silentsmart.database.dao.TemporizadorDao
 import com.example.silentsmart.database.entity.Horario
 import com.example.silentsmart.database.entity.Temporizador
 
-@Database(entities = [Horario::class, Temporizador::class], version = 3)
+@Database(entities = [Horario::class, Temporizador::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun horarioDao(): HorarioDao

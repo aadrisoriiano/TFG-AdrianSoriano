@@ -14,5 +14,5 @@ data class Horario(
     val horaFin: String,
     val activado: Boolean,
     val modo: Modo,
-
+    val favorito: Boolean = false // <-- Añade esto
 )

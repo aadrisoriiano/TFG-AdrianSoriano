@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HorarioDao {
-    @get:Query("SELECT * FROM Horario")
-    val all: Flow<MutableList<Horario?>?>
+    @get:Query("SELECT * FROM Horario ORDER BY favorito DESC, id ASC")
+    val all: Flow<List<Horario>>
 
-    @Query("SELECT * FROM Horario WHERE id = :id")
-    fun get(id: Int): Horario
+    //@Query("SELECT * FROM Horario WHERE id = :id")
+   // fun get(id: Int): Horario
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     fun insert(horario: Horario?)

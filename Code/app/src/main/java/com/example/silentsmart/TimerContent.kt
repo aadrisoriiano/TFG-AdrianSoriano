@@ -69,6 +69,7 @@ fun TimerContent(
                 TimerCard(
                     temporizador = temporizador,
                     onPlay = { viewModel.startTimer(temporizador, context) },
+                    viewModel = viewModel,
                     editMode = editMode,
                     onSelect = if (editMode && onTimerSelected != null) {
                         { onTimerSelected(temporizador) }
@@ -155,6 +156,7 @@ fun TimerSection(
 fun TimerCard(
     temporizador: Temporizador,
     onPlay: () -> Unit,
+    viewModel: MainViewModel,
     editMode: Boolean = false,
     onSelect: (() -> Unit)? = null
 ) {
@@ -177,7 +179,7 @@ fun TimerCard(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // --- NUEVO: Duración y checkbox en la misma fila ---
+                // --- Duración y checkbox en la misma fila ---
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -204,10 +206,14 @@ fun TimerCard(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /* Favorito */ }) {
+                    // --- Icono de favorito aquí ---
+                    IconButton(
+                        onClick = { viewModel.toggleTemporizadorFavorito(temporizador) }
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = "Favorito"
+                            imageVector = if (temporizador.favorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (temporizador.favorito) "Quitar de favoritos" else "Marcar como favorito",
+                            tint = if (temporizador.favorito) Color.Red else Color.Gray
                         )
                     }
                     Box(

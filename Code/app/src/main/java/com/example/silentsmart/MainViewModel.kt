@@ -129,6 +129,7 @@ class MainViewModel @Inject constructor(
     fun setHorarioActivado(horario: Horario, activado: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             db.horarioDao().update(horario.copy(activado = activado))
+            actualizarAlarmManager()
         }
     }
 
@@ -136,7 +137,6 @@ class MainViewModel @Inject constructor(
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // SOLO guardar el modo anterior si reset==true (inicio desde cero)
         if (reset && _activeTimer.value == null && previousRingerMode == null && previousDndMode == null) {
             previousRingerMode = audioManager.ringerMode
             previousDndMode = notificationManager.currentInterruptionFilter
@@ -150,6 +150,9 @@ class MainViewModel @Inject constructor(
         _isTimerRunning.value = true
 
         setAudioMode(context, temporizador.modo)
+
+        // --- PROGRAMA EL ALARM MANAGER SOLO SI EL TEMPORIZADOR ESTÁ CORRIENDO ---
+        actualizarAlarmManager()
 
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
@@ -166,6 +169,8 @@ class MainViewModel @Inject constructor(
                 restorePreviousAudioMode(ctx)
             }
             checkAndApplyActiveScheduleOrTimer()
+            // --- CANCELA EL ALARM MANAGER AL TERMINAR ---
+            actualizarAlarmManager()
         }
     }
 
@@ -177,6 +182,8 @@ class MainViewModel @Inject constructor(
             startTimer(_activeTimer.value!!, context, reset = false)
         } else {
             timerJob?.cancel()
+            // --- CANCELA EL ALARM MANAGER AL PAUSAR ---
+            actualizarAlarmManager()
         }
     }
 
@@ -186,8 +193,9 @@ class MainViewModel @Inject constructor(
         _isTimerRunning.value = false
         _activeTimer.value = null
         _remainingSeconds.value = 0
-        // Al parar, aplica la lógica de prioridad
         checkAndApplyActiveScheduleOrTimer()
+        // --- CANCELA EL ALARM MANAGER AL PARAR ---
+        actualizarAlarmManager()
     }
 
     fun requestDoNotDisturbPermission(context: Context) {
@@ -294,6 +302,7 @@ class MainViewModel @Inject constructor(
     fun updateTemporizador(temporizador: Temporizador) {
         viewModelScope.launch(Dispatchers.IO) {
             db.temporizadorDao().update(temporizador)
+            actualizarAlarmManager()
         }
     }
 
@@ -306,12 +315,43 @@ class MainViewModel @Inject constructor(
     fun deleteTemporizador(temporizador: Temporizador) {
         viewModelScope.launch(Dispatchers.IO) {
             db.temporizadorDao().delete(temporizador)
+            actualizarAlarmManager()
         }
     }
 
     fun deleteHorario(horario: Horario) {
         viewModelScope.launch(Dispatchers.IO) {
             db.horarioDao().delete(horario)
+            actualizarAlarmManager()
+        }
+    }
+
+    fun toggleHorarioFavorito(horario: Horario) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.horarioDao().update(horario.copy(favorito = !horario.favorito))
+        }
+    }
+
+    fun toggleTemporizadorFavorito(temporizador: Temporizador) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.temporizadorDao().update(temporizador.copy(favorito = !temporizador.favorito))
+        }
+    }
+
+    private suspend fun hayAlgunoActivo(): Boolean {
+        val horariosActivos = db.horarioDao().all.firstOrNull()?.any { it.activado } == true
+        val temporizadoresActivos = db.temporizadorDao().all.firstOrNull()?.any { it.activado } == true
+        return horariosActivos || temporizadoresActivos
+    }
+
+    private fun actualizarAlarmManager() {
+        val context = getApplication<Application>().applicationContext
+        viewModelScope.launch(Dispatchers.IO) {
+            if (hayAlgunoActivo()) {
+                AlarmUtils.scheduleAlarm(context)
+            } else {
+                AlarmUtils.cancelAlarm(context)
+            }
         }
     }
 }

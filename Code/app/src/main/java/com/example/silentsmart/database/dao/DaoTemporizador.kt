@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TemporizadorDao {
-    @get:Query("SELECT * FROM Temporizador")
-    val all: Flow<MutableList<Temporizador?>?>
+    @get:Query("SELECT * FROM Temporizador ORDER BY favorito DESC, id ASC")
+    val all: Flow<List<Temporizador>>
 
     @Query("SELECT * FROM Temporizador WHERE id = :id")
     fun get(id: Int): Temporizador?

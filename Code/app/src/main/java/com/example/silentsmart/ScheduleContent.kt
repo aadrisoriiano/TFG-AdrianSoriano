@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -108,6 +110,17 @@ fun ScheduleCard(
                         contentDescription = "Modo: ${horario.modo}",
                         tint = Color.Black
                     )
+                    // --- Icono de favorito (Compose) ---
+                    IconButton(
+                        onClick = { viewModel.toggleHorarioFavorito(horario) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (horario.favorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (horario.favorito) "Quitar de favoritos" else "Marcar como favorito",
+                            tint = if (horario.favorito) Color.Red else Color.Gray
+                        )
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         checked = horario.activado,
