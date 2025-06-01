@@ -32,7 +32,11 @@ import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TimerContent(viewModel: MainViewModel) {
+fun TimerContent(
+    viewModel: MainViewModel,
+    editMode: Boolean = false,
+    onTimerSelected: ((Temporizador) -> Unit)? = null
+) {
     val context = LocalContext.current
     val temporizadores = viewModel.temporizadores.collectAsState(initial = emptyList()).value
     val activeTimer = viewModel.activeTimer.collectAsState().value
@@ -64,7 +68,11 @@ fun TimerContent(viewModel: MainViewModel) {
             items(temporizadores.orEmpty().filterNotNull(), key = { it.id }) { temporizador ->
                 TimerCard(
                     temporizador = temporizador,
-                    onPlay = { viewModel.startTimer(temporizador, context) }
+                    onPlay = { viewModel.startTimer(temporizador, context) },
+                    editMode = editMode,
+                    onSelect = if (editMode && onTimerSelected != null) {
+                        { onTimerSelected(temporizador) }
+                    } else null
                 )
             }
         }
@@ -139,7 +147,9 @@ fun TimerSection(
 @Composable
 fun TimerCard(
     temporizador: Temporizador,
-    onPlay: () -> Unit
+    onPlay: () -> Unit,
+    editMode: Boolean = false,
+    onSelect: (() -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -150,58 +160,76 @@ fun TimerCard(
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            Modifier.fillMaxSize()
         ) {
-            Text(
-                text = "${temporizador.horas}h ${temporizador.minutos}m",
-                fontSize = 32.sp,
-                color = Color.Black,
-                fontFamily = WdxFontFamily,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                IconButton(onClick = { /* Favorito */ }) {
-                    Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorito"
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .width(52.dp)
-                        .height(28.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFB0B0B0)),
-                    contentAlignment = Alignment.Center
+                // --- NUEVO: Duración y checkbox en la misma fila ---
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    IconButton(
-                        onClick = onPlay,
-                        modifier = Modifier.size(28.dp)
-                    ) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")
+                    Text(
+                        text = "${temporizador.horas}h ${temporizador.minutos}m",
+                        fontSize = 32.sp,
+                        color = Color.Black,
+                        fontFamily = WdxFontFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (editMode && onSelect != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Checkbox(
+                            checked = false,
+                            onCheckedChange = { onSelect() }
+                        )
                     }
                 }
-                IconButton(onClick = { /* Modo, solo visual */ }) {
-                    val iconRes = when (temporizador.modo) {
-                        Modo.SILENCIO -> R.drawable.volume_off
-                        Modo.VIBRACION -> R.drawable.vibration
-                        Modo.SONIDO -> R.drawable.volume_up
-                        else -> R.drawable.volume_off
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { /* Favorito */ }) {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = "Favorito"
+                        )
                     }
-                    Icon(
-                        painter = painterResource(id = iconRes),
-                        contentDescription = "Modo: ${temporizador.modo}"
-                    )
+                    Box(
+                        modifier = Modifier
+                            .width(52.dp)
+                            .height(28.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFB0B0B0)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = onPlay,
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Iniciar")
+                        }
+                    }
+                    IconButton(onClick = { /* Modo, solo visual */ }) {
+                        val iconRes = when (temporizador.modo) {
+                            Modo.SILENCIO -> R.drawable.volume_off
+                            Modo.VIBRACION -> R.drawable.vibration
+                            Modo.SONIDO -> R.drawable.volume_up
+                            else -> R.drawable.volume_off
+                        }
+                        Icon(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = "Modo: ${temporizador.modo}"
+                        )
+                    }
                 }
             }
         }

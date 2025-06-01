@@ -31,27 +31,34 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @Composable
-fun Header(title: String, viewModel: MainViewModel, onAddClick: () -> Unit) {
+fun Header(
+    title: String,
+    viewModel: MainViewModel,
+    onAddClick: () -> Unit,
+    onEditClick: () -> Unit,
+    isEditMode: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TopButtons(onAddClick)
+        TopButtons(onAddClick, onEditClick, isEditMode)
         Title(title)
         ThreeColumnButtons(viewModel)
     }
 }
+
 @Composable
-fun TopButtons(onAddClick: () -> Unit) {
+fun TopButtons(onAddClick: () -> Unit, onEditClick: () -> Unit, isEditMode: Boolean = false) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 2.dp, start = 6.dp, end = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Botón Edit
+        // Botón Edit/CANCELAR (mismo tamaño que +)
         Box(
             modifier = Modifier
                 .height(26.dp)
@@ -62,12 +69,12 @@ fun TopButtons(onAddClick: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             TextButton(
-                onClick = { /* Acción del botón Edit */ },
+                onClick = onEditClick,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = "Edit",
+                    text = if (isEditMode) "Cancelar" else "Edit",
                     fontFamily = WdxFontFamily,
                     color = Color.Black,
                     fontSize = 14.sp,
@@ -84,11 +91,10 @@ fun TopButtons(onAddClick: () -> Unit) {
                 .shadow(12.dp, RoundedCornerShape(20.dp))
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color.LightGray),
-
             contentAlignment = Alignment.Center
         ) {
             TextButton(
-                onClick = { onAddClick() }, // Acción del botón +, ahora con onAddClick
+                onClick = { onAddClick() },
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(0.dp)
             ) {
@@ -184,3 +190,4 @@ fun GreetingHeader(name: String, modifier: Modifier = Modifier) {
 
     )
 }
+

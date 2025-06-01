@@ -24,7 +24,11 @@ import androidx.compose.ui.text.font.FontWeight
 import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @Composable
-fun ScheduleContent(viewModel: MainViewModel) {
+fun ScheduleContent(
+    viewModel: MainViewModel,
+    editMode: Boolean = false,
+    onHorarioSelected: ((Horario) -> Unit)? = null
+) {
     val horarios = viewModel.horarios.collectAsState(initial = emptyList()).value
 
     LazyColumn(
@@ -34,13 +38,25 @@ fun ScheduleContent(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(horarios.orEmpty().filterNotNull(), key = { it.id }) { horario ->
-            ScheduleCard(horario,viewModel)
+            ScheduleCard(
+                horario = horario,
+                viewModel = viewModel,
+                editMode = editMode,
+                onSelect = if (editMode && onHorarioSelected != null) {
+                    { onHorarioSelected(horario) }
+                } else null
+            )
         }
     }
 }
 
 @Composable
-fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
+fun ScheduleCard(
+    horario: Horario,
+    viewModel: MainViewModel,
+    editMode: Boolean = false,
+    onSelect: (() -> Unit)? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,8 +77,8 @@ fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
                     Text(
                         text = horario.diaSemana,
                         fontFamily = WdxFontFamily,
-                        fontSize = 22.sp, // Más grande
-                        fontWeight = FontWeight.Bold, // En negrita
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
@@ -72,7 +88,15 @@ fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                // --- NUEVO: Checkbox a la izquierda del icono de modo ---
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (editMode && onSelect != null) {
+                        Checkbox(
+                            checked = false,
+                            onCheckedChange = { onSelect() },
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
                     val iconRes = when (horario.modo) {
                         Modo.SILENCIO -> R.drawable.volume_off
                         Modo.VIBRACION -> R.drawable.vibration
@@ -85,18 +109,16 @@ fun ScheduleCard(horario: Horario, viewModel: MainViewModel) {
                         tint = Color.Black
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-
-                   Switch(
+                    Switch(
                         checked = horario.activado,
                         onCheckedChange = { checked -> viewModel.setHorarioActivado(horario, checked) },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color(0xFF98FF98),     // Verde pastel
-                            checkedTrackColor = Color(0xFF77DD77),     // Verde pastel
-                            uncheckedThumbColor = Color(0xFF666666),   // Gris claro para el thumb (círculo)
-                            uncheckedTrackColor = Color(0xFF999999)    // Gris más claro para la pista
-    )
-)
-
+                            checkedThumbColor = Color(0xFF98FF98),
+                            checkedTrackColor = Color(0xFF77DD77),
+                            uncheckedThumbColor = Color(0xFF666666),
+                            uncheckedTrackColor = Color(0xFF999999)
+                        )
+                    )
                 }
             }
         }

@@ -19,6 +19,14 @@ import com.example.silentsmart.ui.theme.WdxFontFamily
 
 @Composable
 fun AddEditScreen(
+    isEdit: Boolean = false,
+    initialType: String? = null, // "timer" o "schedule"
+    initialModo: Modo? = null,
+    initialHours: Int? = null,
+    initialMinutes: Int? = null,
+    initialDay: String? = null,
+    initialStartHour: String? = null,
+    initialEndHour: String? = null,
     onSave: (
         isTimer: Boolean,
         modo: Modo,
@@ -28,17 +36,18 @@ fun AddEditScreen(
         startHour: String?,
         endHour: String?
     ) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
+    onDelete: (() -> Unit)? = null // Solo para editar
 ) {
-    var selectedType by remember { mutableStateOf<String?>(null) } // "timer" o "schedule"
-    var selectedModo by remember { mutableStateOf<Modo?>(null) }
-    var hours by remember { mutableStateOf(0) }
-    var minutes by remember { mutableStateOf(5) }
-    var dayOfWeek by remember { mutableStateOf("Lunes") }
-    var startHour by remember { mutableStateOf("08") }
-    var startMinute by remember { mutableStateOf("00") }
-    var endHour by remember { mutableStateOf("09") }
-    var endMinute by remember { mutableStateOf("00") }
+    var selectedType by remember { mutableStateOf(initialType) }
+    var selectedModo by remember { mutableStateOf(initialModo) }
+    var hours by remember { mutableStateOf(initialHours ?: 0) }
+    var minutes by remember { mutableStateOf(initialMinutes ?: 5) }
+    var dayOfWeek by remember { mutableStateOf(initialDay ?: "Lunes") }
+    var startHour by remember { mutableStateOf(initialStartHour?.split(":")?.getOrNull(0) ?: "08") }
+    var startMinute by remember { mutableStateOf(initialStartHour?.split(":")?.getOrNull(1) ?: "00") }
+    var endHour by remember { mutableStateOf(initialEndHour?.split(":")?.getOrNull(0) ?: "09") }
+    var endMinute by remember { mutableStateOf(initialEndHour?.split(":")?.getOrNull(1) ?: "00") }
 
     // Desplegables
     val dias = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
@@ -376,15 +385,28 @@ fun AddEditScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val buttonModifier = Modifier
+                    .height(48.dp)
+                    .weight(1f)
+                    .padding(horizontal = 6.dp)
+
                 Button(
                     onClick = onCancel,
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(120.dp)
+                    modifier = buttonModifier
                 ) {
-                    Text("Cancelar", fontFamily = WdxFontFamily, color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text("Salir", fontFamily = WdxFontFamily, color = Color.Black, fontWeight = FontWeight.Bold)
+                }
+                if (isEdit && onDelete != null) {
+                    Button(
+                        onClick = { onDelete() },
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        modifier = buttonModifier
+                    ) {
+                        Text("Borrar", fontFamily = WdxFontFamily, color = Color.White, fontWeight = FontWeight.Bold)
+                    }
                 }
                 Button(
                     onClick = {
@@ -401,9 +423,7 @@ fun AddEditScreen(
                     enabled = selectedType != null && selectedModo != null,
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB2FFB2)),
-                    modifier = Modifier
-                        .height(48.dp)
-                        .width(120.dp)
+                    modifier = buttonModifier
                 ) {
                     Text("Guardar", fontFamily = WdxFontFamily, color = Color.Black, fontWeight = FontWeight.Bold)
                 }

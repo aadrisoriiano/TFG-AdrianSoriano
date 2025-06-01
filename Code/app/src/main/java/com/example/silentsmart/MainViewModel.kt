@@ -290,4 +290,28 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateTemporizador(temporizador: Temporizador) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.temporizadorDao().update(temporizador)
+        }
+    }
+
+    fun updateHorario(horario: Horario) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.horarioDao().update(horario)
+        }
+    }
+
+    fun deleteTemporizador(temporizador: Temporizador) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.temporizadorDao().delete(temporizador)
+        }
+    }
+
+    fun deleteHorario(horario: Horario) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.horarioDao().delete(horario)
+        }
+    }
 }
