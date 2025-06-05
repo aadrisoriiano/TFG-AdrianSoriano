@@ -11,5 +11,6 @@ data class Temporizador(
     val minutos: Int,
     val activado: Boolean = false,
     val modo: Modo,
-    val favorito: Boolean = false // Añade esto
+    val favorito: Boolean = false ,
+    val iniciadoEn: Long? = null // Timestamp de cuando se inició
 )

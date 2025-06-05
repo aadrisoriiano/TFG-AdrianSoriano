@@ -6,6 +6,7 @@ import android.media.AudioManager
 import android.app.NotificationManager
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.silentsmart.database.AppDatabase
@@ -28,6 +29,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
+import com.example.silentsmart.AudioModeUtils
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -65,8 +68,6 @@ class MainViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var scheduleJob: Job? = null
 
-    private var previousRingerMode: Int? = null
-    private var previousDndMode: Int? = null
 
     init {
         //deleteAllHorarios()
@@ -84,7 +85,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
     private fun checkAndApplyActiveScheduleOrTimer() {
         val context = getApplication<Application>().applicationContext
         val horariosActivos = horarios.value?.filterNotNull()?.filter { it.activado } ?: emptyList()
@@ -92,54 +92,71 @@ class MainViewModel @Inject constructor(
         val today = LocalDate.now().dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
-        val horarioEnCurso = horariosActivos?.firstOrNull { horario ->
-            horario?.diaSemana.equals(today, ignoreCase = true)
+        val horarioEnCurso = horariosActivos.firstOrNull { horario ->
+            horario.diaSemana.equals(today, ignoreCase = true)
                     && try {
-                        val inicio = LocalTime.parse(horario?.horaInicio, formatter)
-                        val fin = LocalTime.parse(horario?.horaFin, formatter)
-                        now.isAfter(inicio) && now.isBefore(fin)
-                    } catch (e: Exception) {
-                        false
-                    }
+                val inicio = LocalTime.parse(horario.horaInicio, formatter)
+                val fin = LocalTime.parse(horario.horaFin, formatter)
+                now.isAfter(inicio) && now.isBefore(fin)
+            } catch (e: Exception) {
+                false
+            }
         }
 
+        val prefs = context.getSharedPreferences("audio_mode_prefs", Context.MODE_PRIVATE)
+
         if (horarioEnCurso != null) {
-            // Si hay horario activo, guarda el modo anterior solo si no hay timer ni modo guardado
-            if (!_isTimerRunning.value && previousRingerMode == null && previousDndMode == null) {
-                val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                previousRingerMode = audioManager.ringerMode
-                previousDndMode = notificationManager.currentInterruptionFilter
+            if (!_isTimerRunning.value && !prefs.contains("prev_ringer_mode")) {
+                AudioModeUtils.savePreviousModes(context)
             }
-            setAudioMode(context, horarioEnCurso.modo)
+            AudioModeUtils.setAudioMode(context, horarioEnCurso.modo)
         } else {
-            // Si NO hay horario activo, pero hay temporizador activo, manda el temporizador
             val timer = _activeTimer.value
             val running = _isTimerRunning.value
             if (timer != null && running && _remainingSeconds.value > 0) {
-                setAudioMode(context, timer.modo)
-            } else {
-                // Si no hay ni horario ni temporizador, restaura el modo anterior
-                restorePreviousAudioMode(context)
+                if (!prefs.contains("prev_ringer_mode")) {
+                    AudioModeUtils.savePreviousModes(context)
+                }
+                AudioModeUtils.setAudioMode(context, timer.modo)
             }
+            // Quita la restauración automática aquí
+            // else {
+            //     AudioModeUtils.restorePreviousModes(context)
+            // }
         }
     }
 
+
     // --- Cambia el estado del horario ---
-    fun setHorarioActivado(horario: Horario, activado: Boolean) {
+    fun setHorarioActivado(horario: Horario, activado: Boolean, context: Context) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.isNotificationPolicyAccessGranted) {
+            requestDoNotDisturbPermission(context)
+            return // No activar el horario si no hay permisos
+        }
         viewModelScope.launch(Dispatchers.IO) {
             db.horarioDao().update(horario.copy(activado = activado))
             actualizarAlarmManager()
         }
     }
 
-    fun startTimer(temporizador: Temporizador, context: Context, reset: Boolean = true) {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (reset && _activeTimer.value == null && previousRingerMode == null && previousDndMode == null) {
-            previousRingerMode = audioManager.ringerMode
-            previousDndMode = notificationManager.currentInterruptionFilter
+    fun startTimer(temporizador: Temporizador, context: Context, reset: Boolean = true) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.isNotificationPolicyAccessGranted) {
+            requestDoNotDisturbPermission(context)
+            return
+        }
+
+        val prefs = context.getSharedPreferences("audio_mode_prefs", Context.MODE_PRIVATE)
+        if (reset && _activeTimer.value == null && !prefs.contains("prev_ringer_mode")) {
+            AudioModeUtils.savePreviousModes(context)
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            db.temporizadorDao().desactivarTodos() // Desactiva todos los temporizadores de una vez
+            db.temporizadorDao().update(temporizador.copy(activado = true,  iniciadoEn = System.currentTimeMillis() ))
+            actualizarAlarmManager()
         }
 
         _activeTimer.value = temporizador
@@ -149,10 +166,7 @@ class MainViewModel @Inject constructor(
         }
         _isTimerRunning.value = true
 
-        setAudioMode(context, temporizador.modo)
-
-        // --- PROGRAMA EL ALARM MANAGER SOLO SI EL TEMPORIZADOR ESTÁ CORRIENDO ---
-        actualizarAlarmManager()
+        AudioModeUtils.setAudioMode(context, temporizador.modo)
 
         timerJob?.cancel()
         timerJob = viewModelScope.launch {
@@ -163,16 +177,42 @@ class MainViewModel @Inject constructor(
             _isTimerRunning.value = false
             _activeTimer.value = null
 
-            // Restaurar solo si había modo previo guardado
-            val ctx = getApplication<Application>().applicationContext
-            if (previousRingerMode != null || previousDndMode != null) {
-                restorePreviousAudioMode(ctx)
+            withContext(Dispatchers.IO) {
+                db.temporizadorDao().desactivarTodos() // Desactiva todos los temporizadores al terminar
+                actualizarAlarmManager()
+
+                val activos = db.temporizadorDao().all.firstOrNull()?.count { it.activado } ?: 0
+                Log.d("TIMER", "Temporizadores activos tras terminar: $activos")
+                val horariosActivos = db.horarioDao().all.firstOrNull().orEmpty()
+                Log.d("HORARIOS", "Horarios activos: " + horariosActivos.filter { it.activado }.joinToString { "${it.diaSemana} ${it.horaInicio}-${it.horaFin}" })
+
+                val now = LocalTime.now()
+                val today = LocalDate.now().dayOfWeek.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
+                val formatter = DateTimeFormatter.ofPattern("HH:mm")
+                val hayHorarioEnCurso = horariosActivos.any { horario ->
+                    horario.activado &&
+                    horario.diaSemana.equals(today, ignoreCase = true) &&
+                    try {
+                        val inicio = LocalTime.parse(horario.horaInicio, formatter)
+                        val fin = LocalTime.parse(horario.horaFin, formatter)
+                        now.isAfter(inicio) && now.isBefore(fin)
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+                if (!hayHorarioEnCurso) {
+                    withContext(Dispatchers.Main) {
+                        val ctx = getApplication<Application>().applicationContext
+                        AudioModeUtils.restorePreviousModes(ctx)
+                    }
+                }
             }
+
             checkAndApplyActiveScheduleOrTimer()
-            // --- CANCELA EL ALARM MANAGER AL TERMINAR ---
-            actualizarAlarmManager()
         }
     }
+
+
 
 
     fun pauseOrResumeTimer(context: Context) {
@@ -208,27 +248,21 @@ class MainViewModel @Inject constructor(
     }
 
     fun setAudioMode(context: Context, modo: Modo) {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (!notificationManager.isNotificationPolicyAccessGranted) {
+            // Pide permiso SOLO si estamos en contexto de UI
             requestDoNotDisturbPermission(context)
             return
         }
-        when (modo) {
-            Modo.SILENCIO -> audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
-            Modo.VIBRACION -> audioManager.ringerMode = AudioManager.RINGER_MODE_VIBRATE
-            Modo.SONIDO -> audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
-        }
+        AudioModeUtils.setAudioMode(context, modo)
     }
 
+
+
     fun restorePreviousAudioMode(context: Context) {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        previousRingerMode?.let { audioManager.ringerMode = it }
-        previousDndMode?.let { notificationManager.setInterruptionFilter(it) }
-        previousRingerMode = null
-        previousDndMode = null
+        AudioModeUtils.restorePreviousModes(context)
     }
+
 
     private fun preCargarSiEsNecesario() {
         viewModelScope.launch {
@@ -288,7 +322,7 @@ class MainViewModel @Inject constructor(
             } else {
                 db.horarioDao().insert(
                     Horario(
-                        diaSemana = day ?: "Monday",
+                        diaSemana = day ?: "Monday", 
                         horaInicio = startHour ?: "08:00",
                         horaFin = endHour ?: "09:00",
                         activado = false,

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,6 +60,7 @@ fun ScheduleCard(
     editMode: Boolean = false,
     onSelect: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +126,7 @@ fun ScheduleCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         checked = horario.activado,
-                        onCheckedChange = { checked -> viewModel.setHorarioActivado(horario, checked) },
+                        onCheckedChange = { checked -> viewModel.setHorarioActivado(horario, checked, context) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color(0xFF98FF98),
                             checkedTrackColor = Color(0xFF77DD77),
