@@ -10,9 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.silentsmart.ui.theme.WdxFontFamily
@@ -82,6 +84,7 @@ fun AddEditScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(8.dp, RoundedCornerShape(16.dp)) // <-- Añade sombra
                 .background(Color.LightGray, RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
@@ -89,7 +92,7 @@ fun AddEditScreen(
                 Button(
                     onClick = { selectedType = "timer" },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !isEdit || selectedType == "timer", // Solo habilitado si no es edición o si ya es timer
+                    enabled = !isEdit || selectedType == "timer",
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedType == "timer") Color(0xFFB2FFB2) else Color.White
                     )
@@ -99,20 +102,36 @@ fun AddEditScreen(
                         contentDescription = "Temporizador"
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Temporizador", fontFamily = WdxFontFamily)
+                    Text(
+                        "Temporizador",
+                        fontFamily = WdxFontFamily,
+                        fontWeight = FontWeight.Bold, // <-- Negrita
+                        fontSize = 28.sp,             // <-- Más grande
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 }
                 Spacer(Modifier.height(8.dp))
                 Button(
                     onClick = { selectedType = "schedule" },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !isEdit || selectedType == "schedule", // Solo habilitado si no es edición o si ya es schedule
+                    enabled = !isEdit || selectedType == "schedule",
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedType == "schedule") Color(0xFFB2FFB2) else Color.White
                     )
                 ) {
                     Icon(Icons.Default.DateRange, contentDescription = "Horario")
                     Spacer(Modifier.width(8.dp))
-                    Text("Horario", fontFamily = WdxFontFamily)
+                    Text(
+                        "Horario",
+                        fontFamily = WdxFontFamily,
+                        fontWeight = FontWeight.Bold, // <-- Negrita
+                        fontSize = 28.sp,             // <-- Más grande
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -175,6 +194,7 @@ fun AddEditScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .shadow(8.dp, RoundedCornerShape(16.dp)) // <-- Añade sombra
                     .background(Color.LightGray, RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {
@@ -234,6 +254,7 @@ fun AddEditScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .shadow(8.dp, RoundedCornerShape(16.dp)) // <-- Añade sombra
                     .background(Color.LightGray, RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {

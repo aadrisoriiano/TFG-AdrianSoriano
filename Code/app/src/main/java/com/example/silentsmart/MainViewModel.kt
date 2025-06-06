@@ -73,6 +73,7 @@ class MainViewModel @Inject constructor(
         //deleteAllHorarios()
         preCargarSiEsNecesario()
         startScheduleChecker()
+        restaurarTemporizadorActivoSiExiste()
     }
 
     // --- Comprobación periódica de horarios ---
@@ -385,6 +386,36 @@ class MainViewModel @Inject constructor(
                 AlarmUtils.scheduleAlarm(context)
             } else {
                 AlarmUtils.cancelAlarm(context)
+            }
+        }
+    }
+
+    private fun restaurarTemporizadorActivoSiExiste() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val temporizadoresActivos = db.temporizadorDao().all.firstOrNull()?.filter { it.activado } ?: emptyList()
+            val temporizador = temporizadoresActivos.firstOrNull()
+            if (temporizador != null && temporizador.iniciadoEn != null) {
+                val duracionTotal = (temporizador.horas * 3600) + (temporizador.minutos * 60)
+                val segundosTranscurridos = ((System.currentTimeMillis() - temporizador.iniciadoEn!!) / 1000).toInt()
+                val segundosRestantes = duracionTotal - segundosTranscurridos
+                if (segundosRestantes > 0) {
+                    withContext(Dispatchers.Main) {
+                        _activeTimer.value = temporizador
+                        _remainingSeconds.value = segundosRestantes
+                        _isTimerRunning.value = true
+                        // Si quieres, puedes relanzar el timerJob aquí para que siga contando
+                        timerJob?.cancel()
+                        timerJob = viewModelScope.launch {
+                            while (_remainingSeconds.value > 0 && _isTimerRunning.value) {
+                                delay(1000)
+                                _remainingSeconds.value -= 1
+                            }
+                            _isTimerRunning.value = false
+                            _activeTimer.value = null
+                            // ...desactivación y restauración de modo...
+                        }
+                    }
+                }
             }
         }
     }
