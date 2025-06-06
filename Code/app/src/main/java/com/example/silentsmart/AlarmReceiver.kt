@@ -21,7 +21,7 @@ import java.util.Locale
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        showDebugNotification(context, "AlarmReceiver", "Minuto ejecutado: ${System.currentTimeMillis()}")
+        //showDebugNotification(context, "AlarmReceiver", "Minuto ejecutado: ${System.currentTimeMillis()}")
 
         CoroutineScope(Dispatchers.IO).launch {
             val db = AppDatabase.getDatabase(context)
@@ -60,7 +60,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     AudioModeUtils.savePreviousModes(context)
                 }
                 AudioModeUtils.setAudioMode(context, horarioEnCurso.modo)
-                showDebugNotification(context, "Cambio de modo", "Horario: ${horarioEnCurso.modo}")
+                //showDebugNotification(context, "Cambio de modo", "Horario: ${horarioEnCurso.modo}")
 
             } else if (temporizadorActivo != null) {
                 // Si hay temporizador activo, guarda modo previo (solo si no estaba ya guardado)
@@ -68,13 +68,13 @@ class AlarmReceiver : BroadcastReceiver() {
                     AudioModeUtils.savePreviousModes(context)
                 }
                 AudioModeUtils.setAudioMode(context, temporizadorActivo.modo)
-                showDebugNotification(context, "Cambio de modo", "Temporizador: ${temporizadorActivo.modo}")
+               // showDebugNotification(context, "Cambio de modo", "Temporizador: ${temporizadorActivo.modo}")
 
             } else {
                 // No hay horario ni temporizador activo, restaurar modo anterior si lo hay
                 if (prefs.contains("prev_ringer_mode")) {
                     AudioModeUtils.restorePreviousModes(context)
-                    showDebugNotification(context, "Cambio de modo", "Restaurado modo anterior")
+                   // showDebugNotification(context, "Cambio de modo", "Restaurado modo anterior")
                 }
             }
 
@@ -93,10 +93,7 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    /**
-     * Verifica qué temporizadores siguen realmente activos y desactiva los que han expirado
-     * @return El primer temporizador que sigue activo, o null si no hay ninguno
-     */
+
     private suspend fun verificarYLimpiarTemporizadores(
         db: AppDatabase,
         temporizadores: List<com.example.silentsmart.database.entity.Temporizador>
