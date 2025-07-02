@@ -51,5 +51,6 @@ de datos y la programación de alarmas. En total, el proyecto ha sido desarrolla
 largo de aproximadamente dos meses y medio, destinando más de la mitad de ese tiempo
 a la programación.
 
-##Instrucciones de instalación
+## Instrucciones de instalación
+
  En primer lugar, es necesario descargar el archivo APK desde el repositorio de GitHub. Una vez instalada, se debe otorgar permiso de ejecución en segundo plano, lo cual es esencial para que la aplicación pueda gestionar los cambios de modo de sonido automáticamente, incluso cuando no está en primer plano. Finalmente, el usuario puede acceder a la aplicación y comenzar a utilizarla. 
